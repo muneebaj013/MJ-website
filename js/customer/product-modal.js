@@ -321,9 +321,9 @@
     submitReview(e) {
       e.preventDefault();
       const form = e.target;
-      const author = form.author.value;
+      const author = form.author.value.trim();
       const rating = parseInt(form.rating.value);
-      const comment = form.comment.value;
+      const comment = form.comment.value.trim();
 
       if (window.MJReviewStore && this.currentProduct) {
         window.MJReviewStore.addReview({
@@ -331,10 +331,12 @@
           productName: this.currentProduct.name,
           customerName: author,
           rating: rating,
-          comment: comment
+          comment: comment,
+          status: 'pending' // Moderation queue
         });
-        window.MJToast.success('Thank you for your review! It has been posted.');
-        this.render(); // Refresh reviews in modal
+        form.reset();
+        window.MJToast.success('Thank you! Your review has been submitted for admin approval.');
+        this.render(); // Refresh modal view
       }
     },
 

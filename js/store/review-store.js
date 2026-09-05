@@ -23,21 +23,23 @@
         rating: parseInt(reviewData.rating) || 5,
         comment: reviewData.comment || '',
         date: new Date().toISOString().split('T')[0],
-        status: 'approved', // Auto-approved for instant satisfaction
+        status: reviewData.status || 'pending', // Requires Admin Approval
         verified: true
       };
 
       reviews.unshift(newReview);
       window.MJStorage.set('reviews', reviews);
 
-      // Recalculate product rating
-      this._updateProductRatingMetrics(newReview.productId);
+      // Only update metrics if it is approved
+      if (newReview.status === 'approved') {
+        this._updateProductRatingMetrics(newReview.productId);
+      }
 
-      // Admin notification
+      // Admin notification event
       window.MJStorage.emit('admin:notification', {
         type: 'review',
-        title: 'New Customer Review',
-        message: `${newReview.customerName} gave ${newReview.rating}★ to ${newReview.productName}`
+        title: 'New Review Pending Approval',
+        message: `${newReview.customerName} submitted a ${newReview.rating}★ review for "${newReview.productName}". Needs Admin Approval.`
       });
 
       return newReview;

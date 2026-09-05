@@ -10,10 +10,23 @@
       if (!prods || !Array.isArray(prods) || prods.length === 0) {
         this.set('products', initial.products || []);
       } else if (initial.products && Array.isArray(initial.products)) {
+        const initialMap = new Map(initial.products.map(p => [p.id, p]));
+        let updated = false;
+        const updatedProds = prods.map(p => {
+          if (initialMap.has(p.id)) {
+            const seedP = initialMap.get(p.id);
+            // Always sync images array to match true product angles
+            if (JSON.stringify(p.images) !== JSON.stringify(seedP.images)) {
+              updated = true;
+              return { ...p, images: seedP.images };
+            }
+          }
+          return p;
+        });
         const existingIds = new Set(prods.map(p => p.id));
         const missing = initial.products.filter(p => !existingIds.has(p.id));
-        if (missing.length > 0) {
-          this.set('products', [...prods, ...missing]);
+        if (missing.length > 0 || updated) {
+          this.set('products', [...updatedProds, ...missing]);
         }
       }
       

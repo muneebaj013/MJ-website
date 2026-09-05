@@ -1625,22 +1625,58 @@
     },
 
     // ================= 9. REVIEW MODERATION =================
+    reviewFilter: 'all',
+
     renderReviews() {
       const container = document.getElementById('tab-reviews');
       if (!container) return;
 
       const reviews = window.MJReviewStore ? window.MJReviewStore.getAll() : [];
+      const pendingCount = reviews.filter(r => r.status !== 'approved').length;
+      const approvedCount = reviews.filter(r => r.status === 'approved').length;
+
+      let filtered = reviews;
+      if (this.reviewFilter === 'pending') {
+        filtered = reviews.filter(r => r.status !== 'approved');
+      } else if (this.reviewFilter === 'approved') {
+        filtered = reviews.filter(r => r.status === 'approved');
+      }
 
       container.innerHTML = `
         <div class="data-card">
-          <div class="data-card-header">
+          <div class="data-card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
             <div>
               <h3 style="font-family:var(--font-heading); font-size:1.6rem;">Customer Reviews & Ratings Moderation</h3>
-              <p style="color:var(--color-text-muted); font-size:0.9rem;">Approve, moderate, or remove product reviews.</p>
+              <p style="color:var(--color-text-muted); font-size:0.9rem;">Review submissions require Admin Approval before appearing on the public storefront.</p>
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="d-flex gap-2 align-center">
+              <button class="btn btn-sm ${this.reviewFilter === 'all' ? 'btn-primary' : 'btn-outline'}" onclick="window.MJAdmin.reviewFilter='all'; window.MJAdmin.renderReviews();">
+                All Reviews (${reviews.length})
+              </button>
+              <button class="btn btn-sm ${this.reviewFilter === 'pending' ? 'btn-primary' : 'btn-outline'}" onclick="window.MJAdmin.reviewFilter='pending'; window.MJAdmin.renderReviews();" style="${pendingCount > 0 ? 'border-color:var(--color-warning); color:var(--color-warning); font-weight:700;' : ''}">
+                ⏳ Pending Approval (${pendingCount})
+              </button>
+              <button class="btn btn-sm ${this.reviewFilter === 'approved' ? 'btn-primary' : 'btn-outline'}" onclick="window.MJAdmin.reviewFilter='approved'; window.MJAdmin.renderReviews();">
+                ✓ Approved (${approvedCount})
+              </button>
             </div>
           </div>
 
-          <div class="data-table-wrap">
+          <!-- Pending Alert Banner if items waiting -->
+          ${pendingCount > 0 ? `
+            <div style="background:#FFF9E6; border-left:4px solid #F5A623; padding:0.9rem 1.4rem; margin:1rem 1.4rem 0.5rem; border-radius:var(--radius-xs); display:flex; align-items:center; justify-content:space-between;">
+              <div class="d-flex align-center gap-2">
+                <span style="font-size:1.2rem;">⏳</span>
+                <span style="font-size:0.9rem; color:#856404;">
+                  <strong>${pendingCount} review(s)</strong> awaiting moderation. Click <strong>"Approve"</strong> to publish them to the live store.
+                </span>
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="data-table-wrap" style="padding:1.4rem;">
             <table class="data-table">
               <thead>
                 <tr>
@@ -1650,26 +1686,49 @@
                   <th>Comment</th>
                   <th>Date</th>
                   <th>Status</th>
-                  <th>Actions</th>
+                  <th>Moderation Actions</th>
                 </tr>
               </thead>
               <tbody>
-                ${reviews.map(r => `
-                  <tr>
+                ${filtered.length > 0 ? filtered.map(r => `
+                  <tr style="${r.status !== 'approved' ? 'background:rgba(245, 166, 35, 0.04);' : ''}">
                     <td><strong>${r.productName}</strong></td>
-                    <td>${r.customerName}</td>
-                    <td><span style="color:#F5A623;">${'★'.repeat(r.rating)}</span> (${r.rating}/5)</td>
-                    <td style="max-width:300px; font-size:0.85rem;">"${r.comment}"</td>
-                    <td>${r.date}</td>
-                    <td><span class="badge ${r.status === 'approved' ? 'badge-success' : 'badge-stock-low'}">${r.status}</span></td>
                     <td>
-                      <div class="table-actions">
-                        ${r.status !== 'approved' ? `<button class="btn-table" onclick="window.MJReviewStore.updateReviewStatus('${r.id}', 'approved'); window.MJAdmin.renderReviews();" title="Approve">✓</button>` : ''}
-                        <button class="btn-table btn-table-danger" onclick="window.MJReviewStore.deleteReview('${r.id}'); window.MJAdmin.renderReviews();" title="Delete">🗑</button>
+                      <div>${r.customerName}</div>
+                      ${r.verified ? '<small style="color:var(--color-success); font-weight:600;">✓ Verified Buyer</small>' : ''}
+                    </td>
+                    <td><span style="color:#F5A623; letter-spacing:2px;">${'★'.repeat(r.rating)}</span> <br><small>(${r.rating}/5)</small></td>
+                    <td style="max-width:280px; font-size:0.88rem; line-height:1.4;">
+                      <em>"${r.comment}"</em>
+                    </td>
+                    <td><small>${r.date}</small></td>
+                    <td>
+                      ${r.status === 'approved' 
+                        ? '<span class="badge badge-success">✓ Live & Approved</span>' 
+                        : '<span class="badge" style="background:#FFF3CD; color:#856404; font-weight:700; border:1px solid #FFEEBA;">⏳ Pending Approval</span>'
+                      }
+                    </td>
+                    <td>
+                      <div class="table-actions" style="gap:0.4rem;">
+                        ${r.status !== 'approved' ? `
+                          <button class="btn btn-sm btn-primary" style="padding:0.35rem 0.75rem; font-size:0.8rem;" onclick="window.MJReviewStore.updateReviewStatus('${r.id}', 'approved'); window.MJToast.success('Review approved! Now live on storefront.'); window.MJAdmin.renderReviews();" title="Approve & Publish">
+                            ✓ Approve
+                          </button>
+                        ` : ''}
+                        <button class="btn-table btn-table-danger" onclick="if(confirm('Delete this review permanently?')) { window.MJReviewStore.deleteReview('${r.id}'); window.MJToast.info('Review deleted.'); window.MJAdmin.renderReviews(); }" title="Delete Review">
+                          🗑
+                        </button>
                       </div>
                     </td>
                   </tr>
-                `).join('')}
+                `).join('') : `
+                  <tr>
+                    <td colspan="7" style="text-align:center; padding:3rem 1rem; color:var(--color-text-muted);">
+                      <div style="font-size:2rem; margin-bottom:0.5rem;">🌸</div>
+                      <div>No reviews found in this category.</div>
+                    </td>
+                  </tr>
+                `}
               </tbody>
             </table>
           </div>
