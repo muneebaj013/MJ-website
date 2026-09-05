@@ -707,23 +707,62 @@
         return;
       }
 
-      container.innerHTML = this.currentModalImages.map((imgSrc, idx) => `
-        <div style="position:relative; width:90px; height:105px; border-radius:6px; overflow:hidden; border:2px solid ${idx === 0 ? 'var(--color-primary)' : 'var(--border-color-light)'}; box-shadow:var(--shadow-sm); background:#fdfdfd;">
-          <img src="${imgSrc}" alt="Preview ${idx + 1}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='assets/images/fashion-dress.jpg'">
-          
-          <!-- Cover Badge -->
-          ${idx === 0 ? '<span style="position:absolute; bottom:0; left:0; right:0; background:rgba(217,154,168,0.92); color:#fff; font-size:0.65rem; text-align:center; padding:2px 0; font-weight:600;">Main Cover</span>' : ''}
-          
-          <!-- Delete button -->
-          <button type="button" onclick="window.MJAdmin.removeModalImage(${idx})" style="position:absolute; top:3px; right:3px; background:rgba(0,0,0,0.65); color:#fff; border:none; border-radius:50%; width:20px; height:20px; font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Remove image">
-            ✕
-          </button>
+      container.innerHTML = `
+        <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem; font-size:0.78rem; color:var(--color-text-muted);">
+          <span>Total Photos: <strong>${this.currentModalImages.length}</strong> (Click "⭐ Set Cover" to choose the primary display image)</span>
         </div>
-      `).join('');
+        <div style="display:flex; flex-wrap:wrap; gap:0.9rem; width:100%;">
+          ${this.currentModalImages.map((imgSrc, idx) => `
+            <div style="position:relative; width:110px; border-radius:8px; overflow:hidden; border:2px solid ${idx === 0 ? 'var(--color-primary)' : 'var(--border-color-light)'}; box-shadow:${idx === 0 ? '0 0 10px rgba(217,154,168,0.45)' : 'var(--shadow-sm)'}; background:#fff; display:flex; flex-direction:column;">
+              <div style="position:relative; width:100%; height:110px; background:#f5f2f0;">
+                <img src="${imgSrc}" alt="Angle ${idx + 1}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='assets/images/fashion-dress.jpg'">
+                
+                <!-- Position indicator -->
+                <span style="position:absolute; top:4px; left:4px; background:rgba(0,0,0,0.6); color:#fff; font-size:0.68rem; padding:1px 5px; border-radius:4px; font-weight:600;">#${idx + 1}</span>
+
+                <!-- Delete button -->
+                <button type="button" onclick="window.MJAdmin.removeModalImage(${idx})" style="position:absolute; top:4px; right:4px; background:rgba(220,53,69,0.9); color:#fff; border:none; border-radius:50%; width:20px; height:20px; font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Delete this image">
+                  ✕
+                </button>
+              </div>
+
+              <!-- Cover / Actions Bar -->
+              <div style="padding:0.4rem; background:#faf7f5; text-align:center; border-top:1px solid var(--border-color-light);">
+                ${idx === 0 ? `
+                  <span style="display:block; background:var(--color-primary); color:#fff; font-size:0.68rem; font-weight:700; padding:3px 4px; border-radius:4px; letter-spacing:0.02em;">⭐ Main Cover</span>
+                ` : `
+                  <button type="button" onclick="window.MJAdmin.setCoverImage(${idx})" style="width:100%; background:#fff; border:1px solid var(--color-primary); color:var(--color-primary-dark); font-size:0.68rem; font-weight:600; padding:3px 2px; border-radius:4px; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='var(--color-primary)'; this.style.color='#fff';" onmouseout="this.style.background='#fff'; this.style.color='var(--color-primary-dark)';">⭐ Set Cover</button>
+                `}
+                
+                <!-- Reorder arrows -->
+                <div style="display:flex; justify-content:space-between; margin-top:4px;">
+                  <button type="button" onclick="window.MJAdmin.moveModalImage(${idx}, ${idx - 1})" ${idx === 0 ? 'disabled style="opacity:0.3; cursor:default;"' : 'style="cursor:pointer;"'} style="border:1px solid var(--border-color); background:#fff; border-radius:3px; padding:1px 6px; font-size:0.7rem;" title="Move Left">◀</button>
+                  <button type="button" onclick="window.MJAdmin.moveModalImage(${idx}, ${idx + 1})" ${idx === this.currentModalImages.length - 1 ? 'disabled style="opacity:0.3; cursor:default;"' : 'style="cursor:pointer;"'} style="border:1px solid var(--border-color); background:#fff; border-radius:3px; padding:1px 6px; font-size:0.7rem;" title="Move Right">▶</button>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
 
       if (hiddenInput) {
         hiddenInput.value = JSON.stringify(this.currentModalImages);
       }
+    },
+
+    setCoverImage(index) {
+      if (index < 0 || index >= this.currentModalImages.length) return;
+      const [chosen] = this.currentModalImages.splice(index, 1);
+      this.currentModalImages.unshift(chosen);
+      this.renderModalImagePreviews();
+      window.MJToast.success('Cover photo updated! This image will be shown on cards.');
+    },
+
+    moveModalImage(fromIndex, toIndex) {
+      if (toIndex < 0 || toIndex >= this.currentModalImages.length) return;
+      const item = this.currentModalImages.splice(fromIndex, 1)[0];
+      this.currentModalImages.splice(toIndex, 0, item);
+      this.renderModalImagePreviews();
     },
 
     handleProductFileUpload(e) {
@@ -740,13 +779,12 @@
           loadedCount++;
           this.renderModalImagePreviews();
           if (loadedCount === files.length) {
-            window.MJToast.success(`Added ${loadedCount} photo(s) from device!`);
+            window.MJToast.success(`Added ${loadedCount} photo angle(s) from device!`);
           }
         };
         reader.readAsDataURL(file);
       });
 
-      // Clear input so user can select same file again if desired
       e.target.value = '';
     },
 

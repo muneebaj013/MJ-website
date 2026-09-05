@@ -129,12 +129,13 @@
       return `
         <div class="product-card" data-product-id="${product.id}">
           <div class="product-card-media">
-            <img src="${primaryImage}" alt="${product.name}" loading="lazy" class="product-img-main">
+            <img src="${primaryImage}" alt="${product.name}" loading="lazy" class="product-img-main" onclick="window.MJProductModal.open('${product.id}')" style="cursor:pointer;">
             
             <div class="product-card-badges">
               ${discountPercent > 0 ? `<span class="badge badge-sale">-${discountPercent}%</span>` : ''}
               ${product.isNew ? `<span class="badge badge-new">New</span>` : ''}
               ${product.isBestSeller ? `<span class="badge badge-best">Best Seller</span>` : ''}
+              ${product.images && product.images.length > 1 ? `<span class="badge" style="background:rgba(255,255,255,0.92); color:var(--color-heading); font-size:0.7rem; box-shadow:var(--shadow-sm); cursor:pointer;" onclick="window.MJProductModal.open('${product.id}')">📸 ${product.images.length} Angles</span>` : ''}
               ${isOutOfStock ? `<span class="badge badge-stock-out">Out of Stock</span>` : ''}
             </div>
 

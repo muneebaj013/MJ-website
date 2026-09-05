@@ -44,14 +44,20 @@
         <div class="product-detail-grid">
           <!-- Gallery -->
           <div class="product-gallery">
-            <div class="gallery-main-image" id="zoomMainWrap">
-              <img id="mainDetailImage" src="${images[0]}" alt="${p.name}">
+            <div class="gallery-main-image" id="zoomMainWrap" style="position:relative;">
+              <img id="mainDetailImage" src="${images[0]}" alt="${p.name}" style="transition: opacity 0.25s ease;">
+              
+              ${images.length > 1 ? `
+                <button type="button" class="gallery-nav-btn prev" onclick="window.MJProductModal.prevImage()" title="Previous Angle" aria-label="Previous image" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.85); border:1px solid rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:18px; box-shadow:0 2px 8px rgba(0,0,0,0.15); z-index:10;">‹</button>
+                <button type="button" class="gallery-nav-btn next" onclick="window.MJProductModal.nextImage()" title="Next Angle" aria-label="Next image" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.85); border:1px solid rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:18px; box-shadow:0 2px 8px rgba(0,0,0,0.15); z-index:10;">›</button>
+                <div id="galleryAngleBadge" style="position:absolute; bottom:12px; right:12px; background:rgba(0,0,0,0.6); color:#fff; font-size:0.75rem; padding:3px 8px; border-radius:12px; pointer-events:none; z-index:10;">Angle 1 of ${images.length}</div>
+              ` : ''}
             </div>
             ${images.length > 1 ? `
               <div class="gallery-thumbnails">
                 ${images.map((img, idx) => `
-                  <div class="gallery-thumb ${idx === 0 ? 'active' : ''}" onclick="window.MJProductModal.switchImage('${img}', this)">
-                    <img src="${img}" alt="${p.name} preview">
+                  <div class="gallery-thumb ${idx === 0 ? 'active' : ''}" data-index="${idx}" onclick="window.MJProductModal.switchImage('${img}', this, ${idx})">
+                    <img src="${img}" alt="${p.name} angle ${idx + 1}">
                   </div>
                 `).join('')}
               </div>
@@ -228,11 +234,44 @@
       this.initZoom();
     },
 
-    switchImage(imgSrc, thumbEl) {
+    currentImageIndex: 0,
+
+    switchImage(imgSrc, thumbEl, idx = 0) {
+      this.currentImageIndex = idx;
       const mainImg = document.getElementById('mainDetailImage');
-      if (mainImg) mainImg.src = imgSrc;
+      if (mainImg) {
+        mainImg.style.opacity = '0.4';
+        setTimeout(() => {
+          mainImg.src = imgSrc;
+          mainImg.style.opacity = '1';
+        }, 120);
+      }
       document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
-      if (thumbEl) thumbEl.classList.add('active');
+      if (thumbEl) {
+        thumbEl.classList.add('active');
+      } else {
+        const thumbs = document.querySelectorAll('.gallery-thumb');
+        if (thumbs[idx]) thumbs[idx].classList.add('active');
+      }
+      const badge = document.getElementById('galleryAngleBadge');
+      const images = (this.currentProduct && this.currentProduct.images) ? this.currentProduct.images : [];
+      if (badge && images.length) {
+        badge.textContent = `Angle ${idx + 1} of ${images.length}`;
+      }
+    },
+
+    nextImage() {
+      const images = (this.currentProduct && this.currentProduct.images) ? this.currentProduct.images : [];
+      if (images.length <= 1) return;
+      let nextIdx = (this.currentImageIndex + 1) % images.length;
+      this.switchImage(images[nextIdx], null, nextIdx);
+    },
+
+    prevImage() {
+      const images = (this.currentProduct && this.currentProduct.images) ? this.currentProduct.images : [];
+      if (images.length <= 1) return;
+      let prevIdx = (this.currentImageIndex - 1 + images.length) % images.length;
+      this.switchImage(images[prevIdx], null, prevIdx);
     },
 
     selectColor(colorName, el) {
