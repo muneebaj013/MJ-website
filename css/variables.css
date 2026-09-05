@@ -1,0 +1,71 @@
+/* MJ Soft Aesthetic Design System Variables */
+:root {
+  /* Soft Luxury Brand Palette */
+  --bg-primary: #FFF8F5;          /* Warm Ivory / Cream */
+  --bg-secondary: #F8E1E7;        /* Soft Blush Pink */
+  --bg-surface: #FFFFFF;          /* Pure White */
+  --bg-card: #FFFFFF;             /* Card White */
+  --bg-subtle: #FAF2EE;           /* Subtle warm background */
+  --bg-accent-light: #FCEEF2;     /* Very light blush accent */
+  --bg-dark: #2F2624;             /* Luxury Charcoal */
+
+  /* Brand Accents */
+  --color-primary: #D99AA8;       /* Dusty Rose */
+  --color-primary-hover: #C78292; /* Darker Dusty Rose */
+  --color-primary-dark: #A95D70;  /* Deep Dusty Rose */
+  --color-accent: #F3C6B8;        /* Soft Peach */
+  --color-accent-hover: #E7B09F;  /* Deep Peach */
+  --color-neutral: #E8D8CF;       /* Warm Beige */
+  --color-neutral-light: #F4ECE8; /* Pale Beige */
+  --color-neutral-dark: #9E8C82;  /* Medium Beige Taupe */
+
+  /* Typography Colors */
+  --color-text: #3D3533;          /* Deep Charcoal Brown */
+  --color-text-muted: #7A6F6D;    /* Warm Taupe Gray */
+  --color-text-light: #A39694;    /* Light Grayish Brown */
+  --color-heading: #2D2523;       /* Rich Charcoal */
+
+  /* Semantic Feedback */
+  --color-success: #5F8D76;       /* Sage Green */
+  --color-success-bg: #EBF3EE;    /* Soft Sage Tint */
+  --color-warning: #CF8E4B;       /* Warm Amber */
+  --color-warning-bg: #FBF4EA;    /* Soft Amber Tint */
+  --color-danger: #C85D5D;        /* Terracotta Coral */
+  --color-danger-bg: #FBF0F0;     /* Soft Red Tint */
+  --color-info: #6B8FB5;          /* Soft Slate Blue */
+  --color-info-bg: #EDF3F8;       /* Soft Blue Tint */
+
+  /* Borders & Dividers */
+  --border-color: #EEDDD5;        /* Soft Warm Border */
+  --border-color-light: #F6EBE5;  /* Subtle divider */
+  --border-focus: #D99AA8;        /* Dusty Rose Focus */
+
+  /* Typography Hierarchy */
+  --font-heading: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-accent: 'Outfit', sans-serif;
+
+  /* Shadows & Elevation */
+  --shadow-sm: 0 2px 8px rgba(61, 53, 51, 0.04);
+  --shadow-md: 0 6px 20px rgba(61, 53, 51, 0.07);
+  --shadow-lg: 0 14px 36px rgba(61, 53, 51, 0.10);
+  --shadow-hover: 0 18px 40px rgba(217, 154, 168, 0.18);
+  --shadow-drawer: -4px 0 30px rgba(61, 53, 51, 0.12);
+
+  /* Border Radii */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 9999px;
+
+  /* Transitions */
+  --transition-fast: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Layout Containers */
+  --container-max: 1360px;
+  --header-height: 80px;
+  --announcement-height: 38px;
+}

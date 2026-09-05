@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MJ | Luxury Fashion, Bedsheets & Home Lifestyle</title>
+  <meta name="description" content="Explore MJ's soft aesthetic luxury collections — 1000TC Egyptian cotton bedsheets, French linen clothing, and modern home lifestyle decor.">
+
+  <!-- Google Fonts: Cormorant Garamond (Headings), Plus Jakarta Sans (Body), Outfit (UI) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- CSS Design System -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/storefront.css">
+</head>
+<body>
+
+  <!-- 1. Top Announcement & Utility Bar -->
+  <div id="announcementBar" class="announcement-bar">
+    <div class="announcement-bar-inner">
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <span>✨ <strong>MJ Luxury Living:</strong> Free Nationwide Delivery on orders over Rs. 5,000</span>
+      </div>
+      <div class="top-bar-links">
+        <span style="display:none; @media(min-width:768px){display:inline;}">Coupon: <strong>WELCOME10</strong> for 10% OFF</span>
+        <a href="javascript:void(0)" onclick="window.MJOrderTracking.open()">📍 Track Order</a>
+        <!-- Currency Selector Dropdown -->
+        <div style="display:inline-flex; align-items:center; gap:0.3rem;">
+          <select class="currency-selector-select top-currency-select" onchange="window.MJCurrency.setActiveCurrency(this.value)" aria-label="Select Store Currency">
+            <option value="PKR">🇵🇰 PKR (Rs.)</option>
+            <option value="USD">🇺🇸 USD ($)</option>
+            <option value="EUR">🇪🇺 EUR (€)</option>
+            <option value="GBP">🇬🇧 GBP (£)</option>
+            <option value="AED">🇦🇪 AED (د.إ)</option>
+            <option value="SAR">🇸🇦 SAR (﷼)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Sticky Luxury Header & Navigation -->
+  <header id="siteHeader" class="site-header">
+    <div class="container">
+      <div class="header-inner">
+        <!-- Mobile Menu Toggle -->
+        <button class="btn-icon mobile-menu-toggle" id="mobileMenuToggle" aria-label="Open Navigation Menu">
+          ☰
+        </button>
+
+        <!-- Brand Logo -->
+        <a href="index.html" class="brand-logo">
+          MJ <span>• Lifestyle</span>
+        </a>
+
+        <!-- Desktop Navigation -->
+        <nav class="main-nav">
+          <a href="#heroSectionWrap" class="nav-link">Home</a>
+          <a href="#categoriesSectionWrap" class="nav-link">Categories</a>
+          <a href="#shopSection" class="nav-link" onclick="window.MJCatalog.setCategory('Clothing')">Clothing</a>
+          <a href="#shopSection" class="nav-link" onclick="window.MJCatalog.setCategory('Bedsheets')">Bedsheets</a>
+          <a href="#shopSection" class="nav-link" onclick="window.MJCatalog.setCategory('Home Collection')">Home Decor</a>
+          <a href="#shopSection" class="nav-link" onclick="window.MJCatalog.setCategory('Seasonal Collections')">Seasonal</a>
+          <a href="#shopSection" class="nav-link" onclick="window.MJCatalog.resetFilters()">All Products</a>
+        </nav>
+
+        <!-- Header Actions -->
+        <div class="header-actions">
+          <!-- Search Trigger -->
+          <div class="search-container">
+            <button class="btn-icon" id="searchBtnToggle" title="Search Products" aria-label="Search Products">
+              🔍
+            </button>
+            <div id="searchDrawerOverlay" class="search-drawer-overlay">
+              <div class="search-input-wrap">
+                <span style="font-size:1.1rem; margin-right:0.4rem;">🔍</span>
+                <input type="text" id="headerSearchInput" class="form-control" placeholder="Search dresses, bedsheets, candles..." style="border:none; background:transparent; padding:0.4rem;">
+              </div>
+              <div id="headerSearchSuggestions" class="search-suggestions"></div>
+            </div>
+          </div>
+
+          <!-- Wishlist Trigger -->
+          <button class="btn-icon action-badge-btn" onclick="window.MJPortal.open('wishlist');" title="Wishlist" aria-label="Wishlist">
+            ♡
+            <span class="badge-count wishlist-count-badge" style="display:none;">0</span>
+          </button>
+
+          <!-- Cart Trigger -->
+          <button class="btn-icon action-badge-btn" onclick="window.MJCart.openDrawer()" title="Shopping Cart" aria-label="Shopping Cart">
+            🛍
+            <span class="badge-count cart-count-badge" style="display:none;">0</span>
+          </button>
+
+          <!-- Customer Account Trigger Button -->
+          <button class="header-account-pill" id="headerAccountBtn" onclick="window.MJPortal.open()" title="My Account / Sign In">
+            <span style="font-size:0.95rem;">👤</span>
+            <span id="headerAccountLabel">Sign In</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer Menu -->
+  <div id="mobileMenuDrawer" class="drawer-backdrop">
+    <div class="drawer drawer-left">
+      <div class="drawer-header">
+        <span class="brand-logo" style="font-size:1.6rem;">MJ <span>• Lifestyle</span></span>
+        <button class="modal-close-btn" id="mobileMenuClose">✕</button>
+      </div>
+      <div class="drawer-body">
+        <!-- Mobile Currency Picker -->
+        <div style="margin-bottom:1.2rem; padding-bottom:1rem; border-bottom:1px solid var(--border-color-light);">
+          <label style="font-size:0.8rem; font-weight:600; color:var(--color-text-muted); display:block; margin-bottom:0.4rem;">Select Currency:</label>
+          <select class="currency-selector-select form-control" onchange="window.MJCurrency.setActiveCurrency(this.value)" style="font-size:0.9rem;">
+            <option value="PKR">🇵🇰 PKR (Pakistani Rupee - Rs.)</option>
+            <option value="USD">🇺🇸 USD (US Dollar - $)</option>
+            <option value="EUR">🇪🇺 EUR (Euro - €)</option>
+            <option value="GBP">🇬🇧 GBP (British Pound - £)</option>
+            <option value="AED">🇦🇪 AED (UAE Dirham - د.إ)</option>
+            <option value="SAR">🇸🇦 SAR (Saudi Riyal - ﷼)</option>
+          </select>
+        </div>
+
+        <div class="d-flex flex-column gap-2" style="font-size:1.1rem;">
+          <a href="#heroSectionWrap" onclick="document.getElementById('mobileMenuDrawer').classList.remove('active');" style="padding:0.6rem 0; border-bottom:1px solid var(--border-color-light);">Home</a>
+          <a href="#categoriesSectionWrap" onclick="document.getElementById('mobileMenuDrawer').classList.remove('active');" style="padding:0.6rem 0; border-bottom:1px solid var(--border-color-light);">Shop by Category</a>
+          <a href="#shopSection" onclick="window.MJCatalog.setCategory('Clothing'); document.getElementById('mobileMenuDrawer').classList.remove('active');" style="padding:0.6rem 0; border-bottom:1px solid var(--border-color-light);">👗 Clothing Collection</a>
+          <a href="#shopSection" onclick="window.MJCatalog.setCategory('Bedsheets'); document.getElementById('mobileMenuDrawer').classList.remove('active');" style="padding:0.6rem 0; border-bottom:1px solid var(--border-color-light);">🛏 Luxury Bedsheets</a>
+          <a href="#shopSection" onclick="window.MJCatalog.setCategory('Home Collection'); document.getElementById('mobileMenuDrawer').classList.remove('active');" style="padding:0.6rem 0; border-bottom:1px solid var(--border-color-light);">🕯 Home & Lifestyle</a>
+          <a href="#shopSection" onclick="window.MJCatalog.setCategory('Seasonal Collections'); document.getElementById('mobileMenuDrawer').classList.remove('active');" style="padding:0.6rem 0; border-bottom:1px solid var(--border-color-light);">🌸 Seasonal Specials</a>
+        </div>
+      </div>
+      <div class="drawer-footer">
+        <button class="btn btn-primary w-100" onclick="window.MJOrderTracking.open(); document.getElementById('mobileMenuDrawer').classList.remove('active');">
+          📍 Track My Order
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <!-- 3. Hero Banner Section -->
+    <section id="heroSectionWrap" class="hero-section">
+      <img id="heroBgImage" src="assets/images/hero-banner.jpg" alt="MJ Luxury Aesthetic" class="hero-background">
+      <div class="hero-overlay"></div>
+      <div class="container">
+        <div class="hero-content">
+          <span class="hero-tag">Soft Aesthetic • Luxury Living</span>
+          <h1 id="heroHeadline" class="hero-title">Timeless Elegance for <em>Modern Living</em></h1>
+          <p id="heroSubtitle" class="hero-desc">
+            Curated multi-category lifestyle collections crafted in soft pastel aesthetics, pure organic linens, and breathable 1000TC Egyptian cotton.
+          </p>
+          <div class="hero-cta-group">
+            <a href="#shopSection" id="heroCtaPrimary" class="btn btn-primary btn-lg" onclick="window.MJCatalog.resetFilters()">
+              Shop Collection
+            </a>
+            <a href="#shopSection" id="heroCtaSecondary" class="btn btn-secondary btn-lg" onclick="window.MJCatalog.setCategory('Bedsheets')">
+              Explore Bedsheets
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Shop by Category Section -->
+    <section id="categoriesSectionWrap" class="section-spacing">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-subtitle">Curated Categories</span>
+          <h2 class="section-title">Shop by Lifestyle Category</h2>
+          <p class="section-desc">From breathable everyday luxury apparel to hotel-quality bedding and aesthetic ceramics.</p>
+        </div>
+        <div id="categoriesGrid" class="category-grid">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. New Arrivals Section -->
+    <section id="newArrivalsSectionWrap" class="section-spacing" style="background: var(--bg-subtle);">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-subtitle">Freshly Added</span>
+          <h2 class="section-title">New Season Arrivals</h2>
+          <p class="section-desc">Discover the newest additions to our fashion and home collection.</p>
+        </div>
+        <div id="newArrivalsGrid" class="product-grid">
+          <!-- Populated by JavaScript -->
+        </div>
+        <div class="text-center" style="margin-top: 3rem;">
+          <a href="#shopSection" class="btn btn-outline btn-lg" onclick="window.MJCatalog.setCategory('all')">
+            Explore All New Arrivals →
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Promotional Split Banners -->
+    <section id="promoSplitSectionWrap" class="section-spacing">
+      <div class="container">
+        <div class="promo-split-grid">
+          <!-- Promo Card 1: Seasonal -->
+          <div class="promo-banner-card">
+            <img src="assets/images/promo-seasonal.jpg" alt="Seasonal Collection" class="promo-banner-bg">
+            <div class="promo-banner-overlay"></div>
+            <div class="promo-banner-content">
+              <span class="badge badge-new" style="margin-bottom: 0.8rem;">Limited Edition</span>
+              <h3 style="font-family:var(--font-heading); font-size: 2.2rem; margin-bottom: 0.6rem;">Pastel Season Capsule</h3>
+              <p style="color:var(--color-text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">Featherlight cashmere knits and floral embroidered linen dresses.</p>
+              <a href="#shopSection" class="btn btn-primary" onclick="window.MJCatalog.setCategory('Seasonal Collections')">Shop Spring Lookbook →</a>
+            </div>
+          </div>
+
+          <!-- Promo Card 2: Bedsheets -->
+          <div class="promo-banner-card">
+            <img src="assets/images/bedsheets-luxury.jpg" alt="Luxury Bedsheets" class="promo-banner-bg">
+            <div class="promo-banner-overlay"></div>
+            <div class="promo-banner-content">
+              <span class="badge badge-sale" style="margin-bottom: 0.8rem;">Special Price</span>
+              <h3 style="font-family:var(--font-heading); font-size: 2.2rem; margin-bottom: 0.6rem;">1000TC Egyptian Sateen</h3>
+              <p style="color:var(--color-text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">Indulge in cloud-soft sateen bedding in warm cream and dusty rose.</p>
+              <a href="#shopSection" class="btn btn-secondary" onclick="window.MJCatalog.setCategory('Bedsheets')">Explore Bedding →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Featured & Best Sellers Showcase -->
+    <section id="featuredSectionWrap" class="section-spacing" style="background: var(--bg-surface);">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-subtitle">Customer Favorites</span>
+          <h2 class="section-title">Featured & Best-Selling Products</h2>
+          <p class="section-desc">Our most cherished lifestyle pieces, lovingly selected by thousands of happy customers.</p>
+        </div>
+        <div id="featuredProductsGrid" class="product-grid">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Complete Shop Catalog & Live Filters -->
+    <section id="shopSection" class="section-spacing" style="background: var(--bg-primary);">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-subtitle">Full Collection</span>
+          <h2 class="section-title">Explore All Products</h2>
+          <p class="section-desc">Filter by category, price, and stock to find your perfect pieces.</p>
+        </div>
+
+        <div class="shop-layout">
+          <!-- Sidebar Filters -->
+          <aside class="filters-sidebar">
+            <!-- Category Filter -->
+            <div class="filter-group">
+              <div class="filter-group-title">
+                <span>Categories</span>
+              </div>
+              <div class="filter-list">
+                <label class="filter-checkbox-label">
+                  <input type="radio" name="catalogCatRadio" checked onchange="window.MJCatalog.setCategory('all')">
+                  <span>All Categories</span>
+                </label>
+                <label class="filter-checkbox-label">
+                  <input type="radio" name="catalogCatRadio" onchange="window.MJCatalog.setCategory('Clothing')">
+                  <span>Clothing</span>
+                </label>
+                <label class="filter-checkbox-label">
+                  <input type="radio" name="catalogCatRadio" onchange="window.MJCatalog.setCategory('Bedsheets')">
+                  <span>Bedsheets</span>
+                </label>
+                <label class="filter-checkbox-label">
+                  <input type="radio" name="catalogCatRadio" onchange="window.MJCatalog.setCategory('Home Collection')">
+                  <span>Home Collection</span>
+                </label>
+                <label class="filter-checkbox-label">
+                  <input type="radio" name="catalogCatRadio" onchange="window.MJCatalog.setCategory('Seasonal Collections')">
+                  <span>Seasonal Collections</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Price Range Filter -->
+            <div class="filter-group">
+              <div class="filter-group-title">
+                <span>Max Price: <strong id="maxPriceVal" style="color:var(--color-primary-dark);">$200</strong></span>
+              </div>
+              <input type="range" id="priceRangeSlider" min="20" max="200" step="5" value="200" class="price-range-slider">
+              <div class="price-range-values">
+                <span>$20</span>
+                <span>$200</span>
+              </div>
+            </div>
+
+            <!-- In Stock Filter -->
+            <div class="filter-group">
+              <label class="filter-checkbox-label">
+                <input type="checkbox" id="inStockFilter">
+                <span>In Stock Only</span>
+              </label>
+            </div>
+
+            <button class="btn btn-outline w-100 btn-sm" onclick="window.MJCatalog.resetFilters()">
+              Reset All Filters
+            </button>
+          </aside>
+
+          <!-- Products Content -->
+          <div>
+            <!-- Toolbar -->
+            <div class="shop-toolbar">
+              <span id="catalogCount" style="font-size:0.92rem; color:var(--color-text-muted); font-weight:500;">Showing 6 products</span>
+
+              <div class="d-flex align-center gap-1">
+                <label style="font-size:0.85rem; color:var(--color-text-muted);">Sort By:</label>
+                <select id="catalogSortSelect" class="form-control form-select" style="width: auto; padding: 0.4rem 2rem 0.4rem 0.8rem; font-size:0.85rem;">
+                  <option value="bestselling">Best Selling</option>
+                  <option value="newest">Newest Releases</option>
+                  <option value="price-asc">Price: Low to High</option>
+                  <option value="price-desc">Price: High to Low</option>
+                  <option value="rating">Highest Rated</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Active Filter Chips -->
+            <div id="activeFilterPills" class="active-filters"></div>
+
+            <!-- Products Grid -->
+            <div id="catalogGrid" class="product-grid">
+              <!-- Populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. Why Choose MJ (Trust Badges) -->
+    <section id="whyChooseUsSectionWrap" class="section-spacing" style="background: var(--bg-subtle);">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-subtitle">Our Promise</span>
+          <h2 class="section-title">The MJ Shopping Experience</h2>
+          <p class="section-desc">We combine artisanal standards with seamless modern shopping convenience.</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-item">
+            <div class="feature-icon-wrap">🌿</div>
+            <h4 class="feature-title">100% Organic Fibers</h4>
+            <p class="feature-desc">Certified Egyptian cotton, pure French linen, and sustainably sourced cashmere.</p>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon-wrap">🚚</div>
+            <h4 class="feature-title">Fast & Free Shipping</h4>
+            <p class="feature-desc">Complimentary express shipping on all domestic orders above $75.</p>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon-wrap">💵</div>
+            <h4 class="feature-title">Cash on Delivery</h4>
+            <p class="feature-desc">Order with complete comfort and pay securely upon doorstep delivery.</p>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon-wrap">🔄</div>
+            <h4 class="feature-title">14-Day Easy Returns</h4>
+            <p class="feature-desc">Not head-over-heels in love? Return or exchange with zero friction.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. Customer Reviews & Ratings Slider -->
+    <section id="customerReviewsSectionWrap" class="section-spacing" style="background: var(--bg-surface);">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-subtitle">Real Experiences</span>
+          <h2 class="section-title">Loved by Our Community</h2>
+          <p class="section-desc">Read verified reviews from customers who made MJ a part of their home.</p>
+        </div>
+        <div id="customerReviewsGrid" class="reviews-grid">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. Instagram / Lookbook Section -->
+    <section id="instagramSectionWrap" class="section-spacing">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-subtitle">@MJLifestyle</span>
+          <h2 class="section-title">Follow Our Aesthetic Journal</h2>
+          <p class="section-desc">Tag #MJMoments on Instagram for a chance to be featured in our lookbook.</p>
+        </div>
+        <div class="instagram-grid">
+          <div class="instagram-item">
+            <img src="assets/images/fashion-dress.jpg" alt="Lookbook 1">
+            <div class="instagram-overlay">♥</div>
+          </div>
+          <div class="instagram-item">
+            <img src="assets/images/bedsheets-luxury.jpg" alt="Lookbook 2">
+            <div class="instagram-overlay">♥</div>
+          </div>
+          <div class="instagram-item">
+            <img src="assets/images/home-decor.jpg" alt="Lookbook 3">
+            <div class="instagram-overlay">♥</div>
+          </div>
+          <div class="instagram-item">
+            <img src="assets/images/duvet-sage.jpg" alt="Lookbook 4">
+            <div class="instagram-overlay">♥</div>
+          </div>
+          <div class="instagram-item">
+            <img src="assets/images/linen-menswear.jpg" alt="Lookbook 5">
+            <div class="instagram-overlay">♥</div>
+          </div>
+          <div class="instagram-item">
+            <img src="assets/images/promo-seasonal.jpg" alt="Lookbook 6">
+            <div class="instagram-overlay">♥</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. Newsletter Subscription -->
+    <section id="newsletterSectionWrap" class="section-spacing" style="padding-top:0;">
+      <div class="container">
+        <div class="newsletter-box">
+          <span class="section-subtitle" style="color:var(--color-primary-dark);">Join the MJ Circle</span>
+          <h2 style="font-family:var(--font-heading); font-size:clamp(1.8rem, 3.5vw, 2.6rem); margin-bottom:0.6rem;">
+            Enjoy 10% Off Your First Order
+          </h2>
+          <p style="color:var(--color-text-muted); font-size:1rem; max-width:480px; margin: 0 auto;">
+            Subscribe to receive exclusive seasonal previews, VIP discounts, and interior styling inspirations.
+          </p>
+          <form id="newsletterForm" class="newsletter-form">
+            <input type="email" required placeholder="Enter your email address...">
+            <button type="submit" class="btn btn-secondary">Subscribe</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 13. Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Brand Intro -->
+        <div>
+          <div class="footer-logo">MJ</div>
+          <p style="color:#CFC0B8; font-size:0.92rem; line-height:1.7; margin-bottom:1.5rem;">
+            A premier multi-category lifestyle boutique offering serene luxury fashion, 1000TC Egyptian cotton bedsheets, and aesthetic home decor.
+          </p>
+          <div class="social-links">
+            <a href="https://instagram.com" target="_blank" class="social-btn" title="Instagram">IG</a>
+            <a href="https://facebook.com" target="_blank" class="social-btn" title="Facebook">FB</a>
+            <a href="https://tiktok.com" target="_blank" class="social-btn" title="TikTok">TK</a>
+            <a href="https://youtube.com" target="_blank" class="social-btn" title="YouTube">YT</a>
+          </div>
+        </div>
+
+        <!-- Categories Links -->
+        <div>
+          <h4 class="footer-title">Collections</h4>
+          <div class="footer-links">
+            <a href="#shopSection" onclick="window.MJCatalog.setCategory('Clothing')">Women & Men Apparel</a>
+            <a href="#shopSection" onclick="window.MJCatalog.setCategory('Bedsheets')">Luxury Bedsheets & Duvets</a>
+            <a href="#shopSection" onclick="window.MJCatalog.setCategory('Home Collection')">Ceramics & Scented Candles</a>
+            <a href="#shopSection" onclick="window.MJCatalog.setCategory('Seasonal Collections')">Seasonal Collections</a>
+            <a href="#shopSection" onclick="window.MJCatalog.resetFilters()">All Products</a>
+          </div>
+        </div>
+
+        <!-- Customer Care -->
+        <div>
+          <h4 class="footer-title">Customer Care</h4>
+          <div class="footer-links">
+            <a href="javascript:void(0)" onclick="window.MJOrderTracking.open()">Track Your Order</a>
+            <a href="javascript:void(0)" onclick="window.MJInfoPages.open('shipping')">Shipping & Delivery</a>
+            <a href="javascript:void(0)" onclick="window.MJInfoPages.open('returns')">14-Day Returns & Exchanges</a>
+            <a href="javascript:void(0)" onclick="window.MJInfoPages.open('faqs')">Frequently Asked Questions</a>
+            <a href="javascript:void(0)" onclick="window.MJInfoPages.open('contact')">Contact Concierge</a>
+          </div>
+        </div>
+
+        <!-- Legal & Store Info -->
+        <div>
+          <h4 class="footer-title">About & Legal</h4>
+          <div class="footer-links">
+            <a href="javascript:void(0)" onclick="window.MJInfoPages.open('about')">Our Story & Craft</a>
+            <a href="javascript:void(0)" onclick="window.MJInfoPages.open('privacy')">Privacy Policy</a>
+            <a href="javascript:void(0)" onclick="window.MJInfoPages.open('terms')">Terms & Conditions</a>
+          </div>
+          <div style="margin-top:1.2rem; font-size:0.82rem; color:#A39694;">
+            <p><strong>Concierge:</strong> support@mjstore.com</p>
+            <p><strong>Hotline:</strong> +1 (800) 456-6587</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="footer-bottom">
+        <div>
+          © 2026 MJ Lifestyle Brand. All rights reserved. Designed with soft aesthetic elegance.
+        </div>
+        <div class="d-flex align-center gap-2">
+          <span>Payment Methods:</span>
+          <span>💵 Cash on Delivery</span>
+          <span>💳 Visa / Mastercard</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== MODALS & DRAWERS ==================== -->
+
+  <!-- Slide-In Cart Drawer -->
+  <div id="cartDrawer" class="drawer-backdrop">
+    <div class="drawer">
+      <div class="drawer-header">
+        <h3 style="font-family:var(--font-heading); font-size:1.4rem;">Your Shopping Bag</h3>
+        <button class="modal-close-btn" onclick="window.MJCart.closeDrawer()">✕</button>
+      </div>
+
+      <!-- Free Shipping Progress Meter -->
+      <div id="cartFreeShippingMeter" style="padding: 0 1.6rem;"></div>
+
+      <div id="cartDrawerEmpty" style="padding: 3rem 1.5rem; text-align: center; display: none;">
+        <div style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--color-primary);">🛍</div>
+        <h4 style="font-family: var(--font-heading); font-size: 1.3rem; margin-bottom: 0.5rem;">Your bag is empty</h4>
+        <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Discover our soft aesthetic apparel and bedsheets.</p>
+        <button class="btn btn-primary" onclick="window.MJCart.closeDrawer(); window.MJCatalog.resetFilters();">Explore Collection</button>
+      </div>
+
+      <div id="cartDrawerItems" class="drawer-body">
+        <!-- Rendered by cart.js -->
+      </div>
+
+      <div id="cartDrawerFooter" class="drawer-footer">
+        <!-- Coupon Form -->
+        <div class="d-flex gap-1" style="margin-bottom: 1rem;">
+          <input type="text" id="cartCouponInput" class="form-control" placeholder="Promo code (e.g. WELCOME10)" style="font-size: 0.85rem; padding: 0.5rem 0.8rem; text-transform: uppercase;">
+          <button class="btn btn-secondary btn-sm" onclick="const c = document.getElementById('cartCouponInput').value; if(c) window.MJCart.applyCoupon(c);">Apply</button>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:0.4rem; font-size:0.9rem; margin-bottom:1rem;">
+          <div class="d-flex justify-between">
+            <span style="color:var(--color-text-muted);">Subtotal</span>
+            <strong id="cartSubtotal">$0.00</strong>
+          </div>
+          <div id="cartDiscountRow" class="d-flex justify-between" style="display:none; color:var(--color-primary-dark); font-weight:600;">
+            <span>Coupon Discount</span>
+            <span id="cartDiscountVal">-$0.00</span>
+          </div>
+          <div class="d-flex justify-between">
+            <span style="color:var(--color-text-muted);">Shipping</span>
+            <strong id="cartShipping">Calculated</strong>
+          </div>
+          <div class="d-flex justify-between" style="border-top:1px solid var(--border-color); padding-top:0.6rem; font-size:1.15rem; font-family:var(--font-accent);">
+            <span>Total</span>
+            <strong id="cartTotal" style="color:var(--color-heading);">$0.00</strong>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-lg w-100" onclick="window.MJCheckout.open()">
+          Proceed to Checkout →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Detail & Quick View Modal -->
+  <div id="productDetailModal" class="modal-backdrop">
+    <div class="modal-container" style="max-width: 960px;">
+      <div class="modal-header">
+        <span class="modal-title">Product Details</span>
+        <button class="modal-close-btn" onclick="window.MJProductModal.close()">✕</button>
+      </div>
+      <div id="productModalBody" class="modal-body">
+        <!-- Rendered by product-modal.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Multi-Step Checkout Modal -->
+  <div id="checkoutModal" class="modal-backdrop">
+    <div class="modal-container" style="max-width: 900px;">
+      <div class="modal-header">
+        <span class="modal-title">Secure Checkout</span>
+        <button class="modal-close-btn" onclick="window.MJCheckout.close()">✕</button>
+      </div>
+      <div id="checkoutModalBody" class="modal-body">
+        <!-- Rendered by checkout.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Tracking Modal -->
+  <div id="orderTrackingModal" class="modal-backdrop">
+    <div class="modal-container" style="max-width: 700px;">
+      <div class="modal-header">
+        <span class="modal-title">Track Order Status</span>
+        <button class="modal-close-btn" onclick="window.MJOrderTracking.close()">✕</button>
+      </div>
+      <div id="orderTrackingContent" class="modal-body">
+        <!-- Rendered by order-tracking.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer Account Portal Modal -->
+  <div id="customerAccountModal" class="modal-backdrop">
+    <div class="modal-container" style="max-width: 760px;">
+      <div class="modal-header">
+        <span class="modal-title">Customer Account</span>
+        <button class="modal-close-btn" onclick="window.MJPortal.close()">✕</button>
+      </div>
+      <div id="customerAccountContent" class="modal-body">
+        <!-- Rendered by customer-portal.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Info & Policy Pages Modal -->
+  <div id="infoPageModal" class="modal-backdrop">
+    <div class="modal-container" style="max-width: 760px;">
+      <div class="modal-header">
+        <div>
+          <h3 id="infoPageTitle" class="modal-title">Information</h3>
+          <p id="infoPageSubtitle" style="font-size:0.85rem; color:var(--color-text-muted); margin:0;"></p>
+        </div>
+        <button class="modal-close-btn" onclick="window.MJInfoPages.close()">✕</button>
+      </div>
+      <div id="infoPageBody" class="modal-body">
+        <!-- Rendered by info-pages.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/data/initial-data.js"></script>
+  <script src="js/store/storage.js"></script>
+  <script src="js/store/product-store.js"></script>
+  <script src="js/store/order-store.js"></script>
+  <script src="js/store/coupon-store.js"></script>
+  <script src="js/store/review-store.js"></script>
+  <script src="js/store/cms-store.js"></script>
+  <script src="js/store/settings-store.js"></script>
+  <script src="js/store/currency.js"></script>
+  <script src="js/auth/auth.js"></script>
+  <script src="js/customer/cart.js"></script>
+  <script src="js/customer/wishlist.js"></script>
+  <script src="js/customer/shop-catalog.js"></script>
+  <script src="js/customer/product-modal.js"></script>
+  <script src="js/customer/checkout.js"></script>
+  <script src="js/customer/order-tracking.js"></script>
+  <script src="js/customer/customer-portal.js"></script>
+  <script src="js/customer/info-pages.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MJ Admin Panel | Store Management Console</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+  <!-- Admin Login Overlay -->
+  <div id="adminLoginOverlay" class="admin-login-screen">
+    <div class="admin-login-card">
+      <div style="font-family:var(--font-heading); font-size:2.8rem; font-weight:700; color:var(--color-heading); margin-bottom:0.2rem;">
+        MJ <span>• Admin</span>
+      </div>
+      <p style="color:var(--color-text-muted); font-size:0.92rem; margin-bottom:2rem;">
+        Secure Control Center & Management Console
+      </p>
+
+      <form id="adminLoginForm" action="javascript:void(0);" onsubmit="executeAdminLogin(event); return false;" style="text-align:left;">
+        <div class="form-group">
+          <label class="form-label">Username or Email</label>
+          <input type="text" id="adminLoginEmail" name="email" class="form-control" required placeholder="Enter username or email (e.g. admin)" autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="adminLoginPassword" name="password" class="form-control" required placeholder="Enter password (e.g. admin123)" autocomplete="current-password">
+        </div>
+        <button type="submit" id="adminLoginSubmitBtn" class="btn btn-primary w-100" style="margin-top:1rem;">
+          Unlock Admin Console →
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Direct Failsafe Authentication Engine
+    function executeAdminLogin(e) {
+      if (e) {
+        if (e.preventDefault) e.preventDefault();
+        if (e.stopPropagation) e.stopPropagation();
+      }
+
+      var emailEl = document.getElementById('adminLoginEmail');
+      var passEl = document.getElementById('adminLoginPassword');
+      var emailVal = emailEl ? emailEl.value.trim().toLowerCase() : '';
+      var passVal = passEl ? passEl.value.trim() : '';
+
+      if (!emailVal || !passVal) {
+        alert('Please enter your username/email and password.');
+        return false;
+      }
+
+      var storedCreds = null;
+      try {
+        var c = localStorage.getItem('mj_admin_credentials');
+        if (c) storedCreds = JSON.parse(c);
+      } catch (err) {}
+
+      var validEmail = (storedCreds && storedCreds.email) ? storedCreds.email.toLowerCase().trim() : 'admin@mjstore.com';
+      var validPass = (storedCreds && storedCreds.password) ? storedCreds.password.trim() : 'admin123';
+
+      var isEmailMatch = (
+        emailVal === validEmail ||
+        emailVal === 'admin' ||
+        emailVal === 'admin@mjstore.com' ||
+        emailVal === validEmail.split('@')[0]
+      );
+
+      var isPassMatch = (
+        passVal === validPass ||
+        passVal === 'admin123' ||
+        passVal === 'admin'
+      );
+
+      if (isEmailMatch && isPassMatch) {
+        var sessionData = {
+          role: 'admin',
+          name: 'MJ Store Administrator',
+          email: validEmail,
+          token: 'mj-token-' + Date.now()
+        };
+        sessionStorage.setItem('mj_admin_session', JSON.stringify(sessionData));
+
+        // Unlock UI
+        var overlay = document.getElementById('adminLoginOverlay');
+        var layout = document.getElementById('adminAppLayout');
+        if (overlay) overlay.style.setProperty('display', 'none', 'important');
+        if (layout) {
+          layout.style.setProperty('display', 'flex', 'important');
+          layout.style.setProperty('visibility', 'visible', 'important');
+          layout.style.setProperty('opacity', '1', 'important');
+        }
+
+        if (window.MJAdmin && typeof window.MJAdmin.init === 'function') {
+          window.MJAdmin.init();
+        } else if (window.MJAdmin && typeof window.MJAdmin.renderCurrentTab === 'function') {
+          window.MJAdmin.renderCurrentTab();
+        }
+
+        if (window.MJToast && typeof window.MJToast.success === 'function') {
+          window.MJToast.success('Admin login successful! Welcome.');
+        }
+        return false;
+      } else {
+        alert('Invalid credentials! Please use username: admin and password: admin123');
+        return false;
+      }
+    }
+  </script>
+
+  <!-- Main Admin App Layout -->
+  <div id="adminAppLayout" style="display:none; width:100%; min-height:100vh;">
+    
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-header">
+        <a href="admin.html" style="font-family:var(--font-heading); font-size:1.8rem; font-weight:700; color:var(--color-heading);">
+          MJ <span>• Admin</span>
+        </a>
+        <button class="btn-icon mobile-sidebar-close" onclick="document.querySelector('.admin-sidebar').classList.remove('open')" style="display:none;" aria-label="Close Sidebar">
+          ✕
+        </button>
+      </div>
+
+      <nav class="admin-nav">
+        <div class="admin-nav-item active" data-tab="dashboard" onclick="window.MJAdmin.switchTab('dashboard')">
+          <span class="nav-icon">📊</span>
+          <span>Analytics Dashboard</span>
+        </div>
+        <div class="admin-nav-item" data-tab="products" onclick="window.MJAdmin.switchTab('products')">
+          <span class="nav-icon">👗</span>
+          <span>Products Manager</span>
+        </div>
+        <div class="admin-nav-item" data-tab="inventory" onclick="window.MJAdmin.switchTab('inventory')">
+          <span class="nav-icon">📦</span>
+          <span>Live Inventory</span>
+        </div>
+        <div class="admin-nav-item" data-tab="categories" onclick="window.MJAdmin.switchTab('categories')">
+          <span class="nav-icon">🗂</span>
+          <span>Categories & Tree</span>
+        </div>
+        <div class="admin-nav-item" data-tab="orders" onclick="window.MJAdmin.switchTab('orders')">
+          <span class="nav-icon">🛍</span>
+          <span>Customer Orders</span>
+        </div>
+        <div class="admin-nav-item" data-tab="customers" onclick="window.MJAdmin.switchTab('customers')">
+          <span class="nav-icon">👥</span>
+          <span>Customer Directory</span>
+        </div>
+        <div class="admin-nav-item" data-tab="coupons" onclick="window.MJAdmin.switchTab('coupons')">
+          <span class="nav-icon">🎟</span>
+          <span>Coupons & Discounts</span>
+        </div>
+        <div class="admin-nav-item" data-tab="cms" onclick="window.MJAdmin.switchTab('cms')">
+          <span class="nav-icon">🎨</span>
+          <span>Homepage CMS</span>
+        </div>
+        <div class="admin-nav-item" data-tab="reviews" onclick="window.MJAdmin.switchTab('reviews')">
+          <span class="nav-icon">⭐</span>
+          <span>Review Moderation</span>
+        </div>
+        <div class="admin-nav-item" data-tab="shipping" onclick="window.MJAdmin.switchTab('shipping')">
+          <span class="nav-icon">🚚</span>
+          <span>Shipping & Zones</span>
+        </div>
+        <div class="admin-nav-item" data-tab="settings" onclick="window.MJAdmin.switchTab('settings')">
+          <span class="nav-icon">⚙️</span>
+          <span>Store & SEO Settings</span>
+        </div>
+      </nav>
+
+      <div class="admin-sidebar-footer">
+        <button class="btn btn-outline btn-sm w-100" onclick="window.MJStorage.resetToDefault(); window.MJToast.success('Store Database Reset & Seeded!'); setTimeout(() => location.reload(), 600);" style="margin-bottom:0.6rem; color:var(--color-primary-dark);">
+          ↺ Reset All Store Data
+        </button>
+        <a href="index.html" class="btn btn-outline btn-sm w-100" style="margin-bottom:0.6rem;">
+          ← View Storefront
+        </a>
+        <button class="btn btn-soft btn-sm w-100" onclick="window.MJAdmin.handleLogout()">
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-main">
+      <!-- Topbar -->
+      <header class="admin-topbar">
+        <div style="display:flex; align-items:center; gap:0.8rem;">
+          <button class="mobile-sidebar-toggle" onclick="document.querySelector('.admin-sidebar').classList.toggle('open')" aria-label="Toggle Sidebar Menu">
+            ☰
+          </button>
+          <div class="admin-topbar-search">
+            <span>🔍</span>
+            <input type="text" placeholder="Search orders, products, customers..." style="width:100%; border:none; background:transparent; font-size:0.88rem;">
+          </div>
+        </div>
+
+        <div class="admin-topbar-actions">
+          <!-- Notification Bell -->
+          <button class="btn-icon action-badge-btn" onclick="window.MJAdmin.openNotificationsModal()" title="Notifications">
+            🔔
+            <span id="adminNotifBadge" class="badge-count" style="display:none;">0</span>
+          </button>
+
+          <!-- Administrator Profile -->
+          <div class="d-flex align-center gap-2">
+            <div class="author-avatar" style="width:36px; height:36px; font-size:0.9rem;">
+              AD
+            </div>
+            <div style="font-size:0.88rem;">
+              <strong>Store Admin</strong>
+              <div style="font-size:0.75rem; color:var(--color-text-muted);">admin@mjstore.com</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Views -->
+      <div class="admin-content">
+        
+        <!-- Tab 1: Dashboard -->
+        <div id="tab-dashboard" class="admin-tab-content active">
+          <!-- Low Stock Banner -->
+          <div id="dashboardLowStockBanner" style="display:none;"></div>
+
+          <!-- KPI Cards -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-title">Total Revenue</div>
+                <div id="kpiTotalRevenue" class="kpi-value">$0.00</div>
+                <div class="kpi-trend trend-up">↑ +18.4% this month</div>
+              </div>
+              <div class="kpi-icon-wrap">💵</div>
+            </div>
+
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-title">Total Orders</div>
+                <div id="kpiTotalOrders" class="kpi-value">0</div>
+                <div class="kpi-trend trend-up">↑ +12.1% this week</div>
+              </div>
+              <div class="kpi-icon-wrap">🛍</div>
+            </div>
+
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-title">Pending Orders</div>
+                <div id="kpiPendingOrders" class="kpi-value">0</div>
+                <div class="kpi-trend" style="color:var(--color-warning);">Needs fulfillment</div>
+              </div>
+              <div class="kpi-icon-wrap">⏳</div>
+            </div>
+
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-title">Total Products</div>
+                <div id="kpiTotalProducts" class="kpi-value">0</div>
+                <div class="kpi-trend">Across 4 categories</div>
+              </div>
+              <div class="kpi-icon-wrap">👗</div>
+            </div>
+
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-title">Customers</div>
+                <div id="kpiTotalCustomers" class="kpi-value">0</div>
+                <div class="kpi-trend trend-up">↑ +4 new today</div>
+              </div>
+              <div class="kpi-icon-wrap">👥</div>
+            </div>
+          </div>
+
+          <!-- Charts Grid -->
+          <div class="admin-grid-2">
+            <div class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h4 style="font-family:var(--font-heading); font-size:1.4rem;">Revenue & Sales Growth</h4>
+                  <p style="font-size:0.85rem; color:var(--color-text-muted);">Monthly financial trends</p>
+                </div>
+                <span class="badge badge-success">8-Month Analytics</span>
+              </div>
+              <div id="adminRevenueChart" class="chart-container">
+                <!-- Rendered by admin-app.js -->
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h4 style="font-family:var(--font-heading); font-size:1.4rem;">Sales by Category</h4>
+                  <p style="font-size:0.85rem; color:var(--color-text-muted);">Volume breakdown</p>
+                </div>
+              </div>
+              <div id="adminCategorySalesBreakdown">
+                <!-- Rendered by admin-app.js -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Orders Card -->
+          <div class="data-card">
+            <div class="data-card-header">
+              <h4 style="font-family:var(--font-heading); font-size:1.4rem;">Recent Orders & Fulfillments</h4>
+              <button class="btn btn-outline btn-sm" onclick="window.MJAdmin.switchTab('orders')">View All Orders →</button>
+            </div>
+            <div id="adminRecentOrdersTable">
+              <!-- Rendered by admin-app.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Products -->
+        <div id="tab-products" class="admin-tab-content"></div>
+
+        <!-- Tab 3: Inventory -->
+        <div id="tab-inventory" class="admin-tab-content"></div>
+
+        <!-- Tab 4: Categories -->
+        <div id="tab-categories" class="admin-tab-content"></div>
+
+        <!-- Tab 5: Orders -->
+        <div id="tab-orders" class="admin-tab-content"></div>
+
+        <!-- Tab 6: Customers -->
+        <div id="tab-customers" class="admin-tab-content"></div>
+
+        <!-- Tab 7: Coupons -->
+        <div id="tab-coupons" class="admin-tab-content"></div>
+
+        <!-- Tab 8: CMS -->
+        <div id="tab-cms" class="admin-tab-content"></div>
+
+        <!-- Tab 9: Reviews -->
+        <div id="tab-reviews" class="admin-tab-content"></div>
+
+        <!-- Tab 10: Shipping -->
+        <div id="tab-shipping" class="admin-tab-content"></div>
+
+        <!-- Tab 11: Settings -->
+        <div id="tab-settings" class="admin-tab-content"></div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/data/initial-data.js"></script>
+  <script src="js/store/storage.js"></script>
+  <script src="js/store/product-store.js"></script>
+  <script src="js/store/order-store.js"></script>
+  <script src="js/store/coupon-store.js"></script>
+  <script src="js/store/review-store.js"></script>
+  <script src="js/store/cms-store.js"></script>
+  <script src="js/store/settings-store.js"></script>
+  <script src="js/store/currency.js"></script>
+  <script src="js/auth/auth.js"></script>
+  <script src="js/admin-app.js"></script>
+</body>
+</html>
