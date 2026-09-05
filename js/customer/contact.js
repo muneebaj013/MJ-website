@@ -2,30 +2,57 @@
 (function() {
   window.MJContact = {
     init() {
-      this.bindFooterForm();
+      this.bindEvents();
       this.renderFloatingWhatsApp();
     },
 
-    bindFooterForm() {
-      const form = document.getElementById('footerContactForm');
-      if (form) {
-        form.addEventListener('submit', (e) => this.submitFooterForm(e));
+    bindEvents() {
+      const modalForm = document.getElementById('contactModalForm');
+      if (modalForm) {
+        modalForm.addEventListener('submit', (e) => this.submitModalForm(e));
       }
     },
 
-    submitFooterForm(e) {
+    openModal() {
+      const modal = document.getElementById('contactUsModal');
+      if (!modal) return;
+
+      const settings = (window.MJSettingsStore && window.MJSettingsStore.getSettings()) || {};
+      const supportEmailEl = document.getElementById('contactModalSupportEmail');
+      const supportPhoneEl = document.getElementById('contactModalSupportPhone');
+
+      if (supportEmailEl) supportEmailEl.textContent = settings.contactEmail || 'support@mjstore.com';
+      if (supportPhoneEl) supportPhoneEl.textContent = settings.contactPhone || '+92 (300) 456-6587';
+
+      modal.classList.add('active');
+      const nameInput = document.getElementById('contactModalName');
+      if (nameInput) setTimeout(() => nameInput.focus(), 150);
+    },
+
+    closeModal() {
+      const modal = document.getElementById('contactUsModal');
+      if (modal) modal.classList.remove('active');
+    },
+
+    submitModalForm(e) {
       if (e && e.preventDefault) e.preventDefault();
 
-      const emailEl = document.getElementById('footerContactEmail');
-      const subjEl = document.getElementById('footerContactSubject');
-      const msgEl = document.getElementById('footerContactMessage');
+      const nameEl = document.getElementById('contactModalName');
+      const emailEl = document.getElementById('contactModalEmail');
+      const phoneEl = document.getElementById('contactModalPhone');
+      const subjEl = document.getElementById('contactModalSubject');
+      const orderNoEl = document.getElementById('contactModalOrderNo');
+      const msgEl = document.getElementById('contactModalMessage');
 
+      const name = nameEl ? nameEl.value.trim() : '';
       const email = emailEl ? emailEl.value.trim() : '';
+      const phone = phoneEl ? phoneEl.value.trim() : '';
       const subject = subjEl ? subjEl.value : 'General Inquiry';
+      const orderNo = orderNoEl ? orderNoEl.value.trim() : '';
       const message = msgEl ? msgEl.value.trim() : '';
 
-      if (!email || !message) {
-        if (window.MJToast) window.MJToast.error('Please enter your email and message.');
+      if (!name || !email || !message) {
+        if (window.MJToast) window.MJToast.error('Please provide your name, email, and message details.');
         return;
       }
 
@@ -33,9 +60,11 @@
       const inquiries = window.MJStorage.get('contactMessages') || [];
       const newInquiry = {
         id: 'inq-' + Date.now(),
-        name: email.split('@')[0],
+        name: name,
         email: email,
+        phone: phone,
         subject: subject,
+        orderNo: orderNo,
         message: message,
         date: new Date().toISOString(),
         status: 'unread'
@@ -48,8 +77,8 @@
       notifs.unshift({
         id: 'notif-' + Date.now(),
         type: 'inquiry',
-        title: `New Inquiry: ${subject}`,
-        message: `${email}: "${message.substring(0, 55)}..."`,
+        title: `Inquiry: ${subject}`,
+        message: `${name} (${email}): "${message.substring(0, 50)}..."`,
         timestamp: 'Just now',
         isRead: false
       });
@@ -58,13 +87,14 @@
       // 3. Prepare direct mailto URL
       const settings = (window.MJSettingsStore && window.MJSettingsStore.getSettings()) || {};
       const supportEmail = settings.contactEmail || 'support@mjstore.com';
-      const mailtoSubject = encodeURIComponent(`[MJ Inquiry - ${subject}] from ${email}`);
-      const mailtoBody = encodeURIComponent(`Customer Email: ${email}\nSubject: ${subject}\n\nMessage / Report:\n${message}\n\n---\nSent via MJ Lifestyle Website`);
+      const mailtoSubject = encodeURIComponent(`[MJ Support - ${subject}] from ${name}`);
+      const mailBodyContent = `Customer Name: ${name}\nCustomer Email: ${email}\nPhone: ${phone || 'N/A'}\nTopic: ${subject}\nOrder Reference: ${orderNo || 'N/A'}\n\nMessage / Report:\n${message}\n\n---\nDispatched via MJ Luxury Lifestyle Website`;
+      const mailtoBody = encodeURIComponent(mailBodyContent);
       const mailtoUrl = `mailto:${supportEmail}?subject=${mailtoSubject}&body=${mailtoBody}`;
 
       // 4. Feedback to customer
       if (window.MJToast) {
-        window.MJToast.success(`Message recorded! Opening your email app to send directly to ${supportEmail}.`);
+        window.MJToast.success(`Thank you ${name}! Your message has been logged. Opening your email app...`);
       }
 
       // Trigger mail client
@@ -75,11 +105,12 @@
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-      }, 400);
+      }, 500);
 
-      // Clear form
-      if (emailEl) emailEl.value = '';
-      if (msgEl) msgEl.value = '';
+      // Reset and close
+      const modalForm = document.getElementById('contactModalForm');
+      if (modalForm) modalForm.reset();
+      this.closeModal();
     },
 
     openWhatsApp(customText) {

@@ -1044,15 +1044,14 @@
   justify-content: center;
   gap: 0.5rem;
   width: 100%;
-  padding: 0.6rem 0.9rem;
+  padding: 0.65rem 1rem;
   background: #25D366;
   color: #FFFFFF !important;
   font-weight: 600;
-  font-size: 0.84rem;
+  font-size: 0.88rem;
   border-radius: var(--radius-sm);
   border: none;
   cursor: pointer;
-  margin-top: 0.5rem;
   transition: all 0.25s ease;
   text-decoration: none;
   box-sizing: border-box;
@@ -1062,6 +1061,66 @@
   background: #1EBE5D;
   transform: translateY(-2px);
   box-shadow: 0 4px 14px rgba(37, 211, 102, 0.4);
+}
+
+/* ================= CONTACT US MODAL & CONCIERGE ================= */
+.contact-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 2rem;
+}
+
+.contact-concierge-sidebar {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-md);
+  padding: 1.6rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.concierge-channel-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  margin-bottom: 1.1rem;
+}
+
+.channel-icon {
+  font-size: 1.25rem;
+  background: var(--bg-surface);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color-light);
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-whatsapp-chat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.2rem;
+  background: #25D366;
+  color: #FFFFFF !important;
+  font-weight: 600;
+  font-size: 0.92rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
+}
+
+.btn-whatsapp-chat:hover {
+  background: #1EBE5D;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.5);
 }
 
 /* Floating WhatsApp Concierge Button */
@@ -1349,6 +1408,10 @@
   .tracking-timeline {
     overflow-x: auto;
     padding-bottom: 0.5rem;
+  }
+  .contact-modal-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
   }
 }
 
