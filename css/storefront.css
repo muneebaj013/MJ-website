@@ -1032,13 +1032,27 @@
   transform: translateY(-2px);
 }
 
-/* Responsive Breakpoints */
+/* Responsive Breakpoints & Device Optimizations */
+@media (max-width: 1200px) {
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+  .category-grid {
+    gap: 1.2rem;
+  }
+}
+
 @media (max-width: 992px) {
   .main-nav {
     display: none;
   }
   .mobile-menu-toggle {
     display: flex;
+  }
+  .header-inner {
+    height: 70px;
+    gap: 1rem;
   }
   .shop-layout {
     grid-template-columns: 1fr;
@@ -1048,38 +1062,235 @@
   }
   .product-detail-grid {
     grid-template-columns: 1fr;
+    gap: 2rem;
   }
   .promo-split-grid {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .promo-banner-card {
+    height: 360px;
+    padding: 2.2rem;
   }
   .footer-grid {
     grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+  }
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+  .announcement-bar-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.4rem;
+  }
+  .top-bar-links {
+    justify-content: center;
+    gap: 0.8rem;
+    font-size: 0.74rem;
+  }
   .header-inner {
-    gap: 1rem;
+    height: 64px;
   }
   .brand-logo {
-    font-size: 1.8rem;
+    font-size: 1.75rem;
+  }
+  .brand-logo span {
+    font-size: 1.3rem;
+  }
+  .hero-section {
+    min-height: 520px;
+    padding: 3.5rem 0;
+  }
+  .hero-title {
+    font-size: clamp(2rem, 5.5vw, 3.2rem);
+  }
+  .hero-desc {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.9rem;
+  }
+  .category-card {
+    height: 260px;
+  }
+  .category-card-name {
+    font-size: 1.35rem;
   }
   .product-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   }
+  .product-card-img {
+    height: 240px;
+  }
   .product-card-body {
-    padding: 0.9rem;
+    padding: 0.85rem;
   }
   .product-card-title {
     font-size: 1.05rem;
   }
+  .instagram-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+  }
+  .newsletter-box {
+    padding: 2.5rem 1.2rem;
+  }
+  .newsletter-form {
+    flex-direction: column;
+    width: 100%;
+  }
+  .newsletter-form input {
+    width: 100%;
+  }
+  .newsletter-form button {
+    width: 100%;
+  }
+  .drawer {
+    width: 100%;
+    max-width: 420px;
+  }
+  .tracking-timeline {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .header-inner {
+    height: 58px;
+    gap: 0.5rem;
+  }
+  .brand-logo {
+    font-size: 1.5rem;
+  }
+  .brand-logo span {
+    font-size: 1.15rem;
+  }
+  .btn-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 0.95rem;
+  }
+  .header-account-pill {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.8rem;
+  }
+  #headerAccountLabel {
+    display: none;
+  }
+  .hero-section {
+    min-height: 460px;
+    padding: 2.5rem 0;
+  }
+  .hero-cta-group {
+    flex-direction: column;
+    width: 100%;
+  }
+  .hero-cta-group .btn {
+    width: 100%;
+  }
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
+  }
+  .category-card {
+    height: 200px;
+  }
+  .category-card-overlay {
+    padding: 1rem 0.8rem;
+  }
+  .category-card-name {
+    font-size: 1.1rem;
+  }
+  .category-card-count {
+    display: none;
+  }
+  .category-card-link {
+    font-size: 0.74rem;
+  }
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  .product-card-img {
+    height: 190px;
+  }
+  .product-card-body {
+    padding: 0.7rem;
+  }
+  .product-card-title {
+    font-size: 0.95rem;
+  }
+  .product-card-category {
+    font-size: 0.72rem;
+  }
+  .product-price-current {
+    font-size: 1rem;
+  }
+  .product-card-actions {
+    display: none;
+  }
+  .product-card-btn-mobile {
+    display: flex;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  .promo-banner-card {
+    height: 280px;
+    padding: 1.5rem;
+  }
+  .promo-banner-title {
+    font-size: 1.5rem;
+  }
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+  .instagram-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
   .footer-grid {
     grid-template-columns: 1fr;
+    gap: 2rem;
   }
   .footer-bottom {
     flex-direction: column;
     gap: 1rem;
     text-align: center;
+  }
+  .modal-container {
+    width: 95% !important;
+    max-height: 92vh !important;
+    margin: 0.5rem auto !important;
+    padding: 0 !important;
+  }
+  .drawer {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .brand-logo {
+    font-size: 1.35rem;
+  }
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+  .product-card-img {
+    height: 260px;
   }
 }

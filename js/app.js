@@ -59,14 +59,19 @@
       // 1. Announcement Bar
       const annBar = document.getElementById('announcementBar');
       const annText = document.getElementById('announcementText');
-      if (annBar && cms.announcement) {
-        if (cms.announcement.enabled !== false) {
+      if (annBar) {
+        if (cms.announcement && cms.announcement.enabled === false) {
+          annBar.style.display = 'none';
+        } else {
           annBar.style.display = 'block';
           if (annText) {
-            annText.innerHTML = `${cms.announcement.text} ${cms.announcement.link ? `<a href="${cms.announcement.link}">${cms.announcement.linkText || 'Shop Now'} →</a>` : ''}`;
+            const defaultText = "✨ <strong>MJ Luxury Living:</strong> Free Nationwide Delivery on orders over Rs. 5,000";
+            const currentText = (cms.announcement && cms.announcement.text) ? cms.announcement.text : defaultText;
+            const linkHtml = (cms.announcement && cms.announcement.link && cms.announcement.link !== '#' && cms.announcement.link !== '#shop') 
+              ? ` <a href="${cms.announcement.link}" style="color:inherit; font-weight:600; text-decoration:underline; margin-left:0.5rem;">${cms.announcement.linkText || 'Shop Now'} →</a>` 
+              : '';
+            annText.innerHTML = `${currentText}${linkHtml}`;
           }
-        } else {
-          annBar.style.display = 'none';
         }
       }
 
