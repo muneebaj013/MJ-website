@@ -630,6 +630,9 @@ window.MJ_INITIAL_DATA = {
     storeTagline: "Multi-Category Luxury Living & Fashion",
     contactEmail: "support@mjstore.com",
     contactPhone: "+92 (300) 456-6587",
+    whatsappNumber: "+923004566587",
+    whatsappMessage: "Hello MJ Luxury Concierge, I would like to inquire about your collections.",
+    enableWhatsAppFloating: true,
     address: "742 Blossom Avenue, Suite 100, Karachi / Lahore",
     defaultCurrency: "PKR",
     currencySymbol: "Rs. ",
@@ -656,6 +659,27 @@ window.MJ_INITIAL_DATA = {
       metaDescription: "Discover MJ's premium multi-category collections including designer clothing, 1000TC Egyptian cotton bedsheets, and aesthetic home decor."
     }
   },
+
+  contactMessages: [
+    {
+      id: "inq-1",
+      name: "Ayesha Khan",
+      email: "ayesha.k@example.com",
+      subject: "Bedsheet Thread Count & Sizing",
+      message: "Hi MJ team, does the 1000TC Egyptian Cotton set fit deep pocket mattresses (up to 16 inches)?",
+      date: "2026-09-05T14:20:00Z",
+      status: "unread"
+    },
+    {
+      id: "inq-2",
+      name: "Zainab Malik",
+      email: "zainab.m@example.com",
+      subject: "Order Tracking Support",
+      message: "Can I request express delivery to Lahore for the Aura embroidered linen dress?",
+      date: "2026-09-05T18:45:00Z",
+      status: "unread"
+    }
+  ],
 
   notifications: [
     {

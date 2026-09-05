@@ -1901,12 +1901,38 @@
 
               <div class="form-row">
                 <div class="form-group">
-                  <label class="form-label">Support Email</label>
+                  <label class="form-label">Support Email (Customer Contact)</label>
                   <input type="email" name="contactEmail" class="form-control" value="${settings.contactEmail || 'support@mjstore.com'}">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Support Phone</label>
                   <input type="text" name="contactPhone" class="form-control" value="${settings.contactPhone || '+92 (300) 456-6587'}">
+                </div>
+              </div>
+
+              <!-- 💬 WhatsApp Integration Section -->
+              <div style="background:var(--bg-subtle); padding:1.2rem; border-radius:var(--radius-sm); border:1px solid var(--border-color-light); margin:1.2rem 0;">
+                <h4 style="font-family:var(--font-heading); font-size:1.2rem; margin-bottom:0.5rem; color:var(--color-heading);">
+                  💬 WhatsApp Support & Concierge Integration
+                </h4>
+                <p style="font-size:0.84rem; color:var(--color-text-muted); margin-bottom:1rem;">
+                  Allow customers to click and chat directly with your team on WhatsApp.
+                </p>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">WhatsApp Number (with country code e.g. +923004566587)</label>
+                    <input type="text" name="whatsappNumber" class="form-control" value="${settings.whatsappNumber || '+923004566587'}" placeholder="+923001234567">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Default Pre-filled Message</label>
+                    <input type="text" name="whatsappMessage" class="form-control" value="${settings.whatsappMessage || 'Hello MJ Concierge, I would like to inquire about your collections.'}">
+                  </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.6rem; margin-top:0.4rem;">
+                  <input type="checkbox" id="settingWhatsAppFloating" name="enableWhatsAppFloating" ${settings.enableWhatsAppFloating !== false ? 'checked' : ''} style="width:18px; height:18px; cursor:pointer;">
+                  <label for="settingWhatsAppFloating" style="font-size:0.88rem; cursor:pointer; font-weight:500;">
+                    Enable Floating WhatsApp Concierge Button on Website
+                  </label>
                 </div>
               </div>
 
@@ -1936,7 +1962,56 @@
             </form>
           </div>
         </div>
+
+        <!-- 📥 Customer Inquiries & Contact Messages Card -->
+        <div class="data-card" style="max-width:760px; margin-top:2rem;">
+          <div class="data-card-header d-flex justify-between align-center">
+            <div>
+              <h3 style="font-family:var(--font-heading); font-size:1.6rem;">📥 Customer Inquiries & Reports</h3>
+              <p style="color:var(--color-text-muted); font-size:0.88rem;">Messages submitted through the Footer Contact Us form.</p>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="window.MJAdmin.renderSettings()">↻ Refresh Inquiries</button>
+          </div>
+          <div style="padding:1.8rem;">
+            ${(() => {
+              const msgs = window.MJStorage.get('contactMessages') || [];
+              if (msgs.length === 0) {
+                return `<div style="text-align:center; padding:2rem; color:var(--color-text-muted);">No customer inquiries yet.</div>`;
+              }
+              return msgs.map(m => `
+                <div style="background:var(--bg-subtle); border:1px solid var(--border-color-light); border-radius:var(--radius-sm); padding:1.2rem; margin-bottom:1rem;">
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.5rem;">
+                    <div>
+                      <strong style="font-size:0.98rem; color:var(--color-heading);">${m.subject || 'General Inquiry'}</strong>
+                      <div style="font-size:0.84rem; color:var(--color-text-muted);">From: <strong>${m.name || 'Customer'}</strong> (${m.email}) • <span style="font-size:0.78rem;">${new Date(m.date).toLocaleString()}</span></div>
+                    </div>
+                    <span class="badge ${m.status === 'unread' ? 'badge-primary' : 'badge-secondary'}">${m.status || 'unread'}</span>
+                  </div>
+                  <p style="font-size:0.9rem; color:var(--color-text); line-height:1.6; background:#ffffff; padding:0.8rem; border-radius:4px; border:1px solid #efe8e3; margin:0.8rem 0;">
+                    "${m.message}"
+                  </p>
+                  <div class="d-flex gap-1" style="margin-top:0.6rem;">
+                    <a href="mailto:${m.email}?subject=Re: [MJ Store] ${encodeURIComponent(m.subject || 'Inquiry')}" class="btn btn-primary btn-sm">
+                      ✉️ Reply via Email
+                    </a>
+                    <button class="btn btn-secondary btn-sm" onclick="window.MJAdmin.deleteInquiry('${m.id}')">
+                      🗑 Delete
+                    </button>
+                  </div>
+                </div>
+              `).join('');
+            })()}
+          </div>
+        </div>
       `;
+    },
+
+    deleteInquiry(id) {
+      const msgs = window.MJStorage.get('contactMessages') || [];
+      const filtered = msgs.filter(m => m.id !== id);
+      window.MJStorage.set('contactMessages', filtered);
+      window.MJToast.success('Inquiry removed.');
+      this.renderSettings();
     },
 
     saveAdminSecuritySettings(e) {
@@ -1986,18 +2061,23 @@
     saveGeneralSettings(e) {
       e.preventDefault();
       const form = e.target;
+      const enableWhatsAppFloating = form.enableWhatsAppFloating ? form.enableWhatsAppFloating.checked : true;
+
       window.MJSettingsStore.updateGeneral({
         storeName: form.storeName.value,
         storeTagline: form.storeTagline.value,
         contactEmail: form.contactEmail.value,
         contactPhone: form.contactPhone.value,
+        whatsappNumber: form.whatsappNumber.value,
+        whatsappMessage: form.whatsappMessage.value,
+        enableWhatsAppFloating: enableWhatsAppFloating,
         address: form.address.value
       });
       window.MJSettingsStore.updateSEO({
         metaTitle: form.metaTitle.value,
         metaDescription: form.metaDescription.value
       });
-      window.MJToast.success('Store & SEO settings updated.');
+      window.MJToast.success('Store, WhatsApp & SEO settings updated successfully!');
     },
 
     // ================= NOTIFICATIONS CENTER =================

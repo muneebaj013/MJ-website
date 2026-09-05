@@ -962,16 +962,16 @@
 .site-footer {
   background: var(--bg-dark);
   color: #E8D8CF;
-  padding-top: 5rem;
+  padding-top: 4.5rem;
   padding-bottom: 2rem;
   margin-top: 5rem;
 }
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1fr;
-  gap: 3rem;
-  margin-bottom: 4rem;
+  grid-template-columns: 1.3fr 0.9fr 0.9fr 0.9fr 1.35fr;
+  gap: 2.2rem;
+  margin-bottom: 3.5rem;
 }
 
 .footer-logo {
@@ -986,7 +986,7 @@
   color: #ffffff;
   font-family: var(--font-heading);
   font-size: 1.25rem;
-  margin-bottom: 1.4rem;
+  margin-bottom: 1.2rem;
 }
 
 .footer-links {
@@ -998,6 +998,105 @@
 
 .footer-links a:hover {
   color: var(--color-primary);
+}
+
+/* Footer Contact Us Form & WhatsApp */
+.footer-contact-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: var(--radius-sm);
+  padding: 1.2rem;
+  backdrop-filter: blur(8px);
+}
+
+.footer-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-sm);
+  color: #ffffff;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.84rem;
+  font-family: var(--font-body);
+  margin-bottom: 0.55rem;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.footer-input::placeholder {
+  color: #A39694;
+}
+
+.footer-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.footer-input option {
+  background: #231C18;
+  color: #FFFFFF;
+}
+
+.footer-whatsapp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  background: #25D366;
+  color: #FFFFFF !important;
+  font-weight: 600;
+  font-size: 0.84rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.footer-whatsapp-btn:hover {
+  background: #1EBE5D;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.4);
+}
+
+/* Floating WhatsApp Concierge Button */
+.floating-whatsapp-widget {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: #25D366;
+  color: #FFFFFF;
+  padding: 0.65rem 1.15rem;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.42), 0 2px 8px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+  font-size: 0.88rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: floatBounce 4s ease-in-out infinite;
+  user-select: none;
+}
+
+.floating-whatsapp-widget:hover {
+  transform: translateY(-4px) scale(1.04);
+  background: #1EBE5D;
+  box-shadow: 0 10px 25px rgba(37, 211, 102, 0.55);
+  color: #FFFFFF;
+}
+
+@keyframes floatBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
 .footer-bottom {

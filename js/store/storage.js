@@ -71,6 +71,15 @@
         this.set('settings', { ...initial.settings, ...setts });
       }
 
+      const msgs = this.get('contactMessages');
+      if (!msgs || !Array.isArray(msgs) || msgs.length === 0) {
+        this.set('contactMessages', initial.contactMessages || []);
+      } else if (initial.contactMessages && Array.isArray(initial.contactMessages)) {
+        const existingMsgIds = new Set(msgs.map(m => m.id));
+        const missingMsgs = initial.contactMessages.filter(m => !existingMsgIds.has(m.id));
+        if (missingMsgs.length > 0) this.set('contactMessages', [...msgs, ...missingMsgs]);
+      }
+
       const notifs = this.get('notifications');
       if (!notifs || !Array.isArray(notifs) || notifs.length === 0) this.set('notifications', initial.notifications || []);
 

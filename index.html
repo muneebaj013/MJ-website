@@ -535,6 +535,36 @@
             <p><strong>Hotline:</strong> +1 (800) 456-6587</p>
           </div>
         </div>
+
+        <!-- 5. Contact Us & Inquiries / WhatsApp -->
+        <div>
+          <h4 class="footer-title">Contact & Support</h4>
+          <div class="footer-contact-card">
+            <p style="font-size:0.82rem; color:#CFC0B8; margin-bottom:0.75rem; line-height:1.4;">
+              Send an inquiry, complaint, or report directly to our team:
+            </p>
+            <form id="footerContactForm" onsubmit="window.MJContact.submitFooterForm(event); return false;">
+              <input type="email" id="footerContactEmail" class="footer-input" placeholder="Your Email Address *" required>
+              <select id="footerContactSubject" class="footer-input">
+                <option value="General Inquiry">💬 General Inquiry</option>
+                <option value="Order Tracking / Issue">📦 Order Issue / Report</option>
+                <option value="Product Question">👗 Product & Sizing Question</option>
+                <option value="Complaint / Feedback">⚠️ Complaint / Feedback</option>
+              </select>
+              <textarea id="footerContactMessage" class="footer-input" rows="2" placeholder="Write your message / report here... *" required></textarea>
+              <button type="submit" class="btn btn-primary btn-sm w-100" style="padding:0.5rem; font-size:0.82rem;">
+                ✉️ Send Direct Email
+              </button>
+            </form>
+
+            <button type="button" class="footer-whatsapp-btn" onclick="window.MJContact.openWhatsApp()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.699c.981.536 1.771.82 2.796.821 3.183 0 5.77-2.586 5.77-5.767 0-3.182-2.587-5.806-5.77-5.806zm0 10.455c-.93 0-1.84-.249-2.637-.723l-.189-.112-1.956.513.522-1.908-.124-.197c-.522-.83-.798-1.791-.797-2.78 0-2.678 2.18-4.858 4.86-4.858 2.679 0 4.86 2.18 4.86 4.858 0 2.679-2.18 4.859-4.86 4.859zm3.013-3.666c-.165-.083-.979-.483-1.131-.538-.152-.055-.262-.083-.373.083-.11.165-.429.538-.526.649-.097.11-.193.125-.358.042-.165-.083-.699-.258-1.332-.822-.493-.439-.826-.982-.923-1.147-.097-.165-.01-.254.072-.336.074-.074.165-.193.248-.29.083-.097.11-.165.165-.276.055-.11.028-.207-.014-.29-.041-.083-.373-.898-.511-1.23-.135-.323-.272-.279-.373-.284l-.318-.004c-.11 0-.29.041-.442.207-.152.165-.58.566-.58 1.38 0 .814.593 1.601.676 1.712.083.11 1.166 1.781 2.825 2.497.395.171.703.273.943.35.397.126.758.108 1.044.066.319-.047.979-.4 1.118-.787.138-.386.138-.717.097-.787-.042-.07-.152-.111-.318-.194z"/>
+              </svg>
+              <span>Chat on WhatsApp</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Bottom Bar -->
@@ -695,6 +725,7 @@
   <script src="js/customer/order-tracking.js?v=2.0"></script>
   <script src="js/customer/customer-portal.js?v=2.0"></script>
   <script src="js/customer/info-pages.js?v=2.0"></script>
+  <script src="js/customer/contact.js?v=2.0"></script>
   <script src="js/app.js?v=2.0"></script>
 </body>
 </html>
