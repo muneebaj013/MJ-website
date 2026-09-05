@@ -31,13 +31,25 @@
       }
       
       const cats = this.get('categories');
-      if (!cats || !Array.isArray(cats) || cats.length === 0) this.set('categories', initial.categories || []);
+      if (!cats || !Array.isArray(cats) || cats.length === 0) {
+        this.set('categories', initial.categories || []);
+      } else if (initial.categories && Array.isArray(initial.categories)) {
+        const existingCatIds = new Set(cats.map(c => c.id));
+        const missingCats = initial.categories.filter(c => !existingCatIds.has(c.id));
+        if (missingCats.length > 0) this.set('categories', [...cats, ...missingCats]);
+      }
 
       const coups = this.get('coupons');
       if (!coups || !Array.isArray(coups) || coups.length === 0) this.set('coupons', initial.coupons || []);
 
       const revs = this.get('reviews');
-      if (!revs || !Array.isArray(revs) || revs.length === 0) this.set('reviews', initial.reviews || []);
+      if (!revs || !Array.isArray(revs) || revs.length === 0) {
+        this.set('reviews', initial.reviews || []);
+      } else if (initial.reviews && Array.isArray(initial.reviews)) {
+        const existingRevIds = new Set(revs.map(r => r.id));
+        const missingRevs = initial.reviews.filter(r => !existingRevIds.has(r.id));
+        if (missingRevs.length > 0) this.set('reviews', [...revs, ...missingRevs]);
+      }
 
       const ords = this.get('orders');
       if (!ords || !Array.isArray(ords) || ords.length === 0) this.set('orders', initial.orders || []);
@@ -46,10 +58,18 @@
       if (!custs || !Array.isArray(custs) || custs.length === 0) this.set('customers', initial.customers || []);
 
       const cmsData = this.get('cms');
-      if (!cmsData || Object.keys(cmsData).length === 0) this.set('cms', initial.cms || {});
+      if (!cmsData || Object.keys(cmsData).length === 0) {
+        this.set('cms', initial.cms || {});
+      } else if (initial.cms) {
+        this.set('cms', { ...initial.cms, ...cmsData });
+      }
 
       const setts = this.get('settings');
-      if (!setts || Object.keys(setts).length === 0) this.set('settings', initial.settings || {});
+      if (!setts || Object.keys(setts).length === 0) {
+        this.set('settings', initial.settings || {});
+      } else if (initial.settings) {
+        this.set('settings', { ...initial.settings, ...setts });
+      }
 
       const notifs = this.get('notifications');
       if (!notifs || !Array.isArray(notifs) || notifs.length === 0) this.set('notifications', initial.notifications || []);
