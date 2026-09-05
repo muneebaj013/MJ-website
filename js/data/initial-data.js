@@ -516,9 +516,9 @@ window.MJ_INITIAL_DATA = {
   cms: {
     announcement: {
       enabled: true,
-      text: "✨ Spring Luxury Sale is Live! Enjoy 10% OFF with code WELCOME10 • Free Shipping on orders over $75",
-      link: "#shop",
-      linkText: "Shop Collection"
+      text: "✨ <strong>MJ Luxury Living:</strong> Free Nationwide Delivery on orders over Rs. 5,000 • Code: <strong>WELCOME10</strong>",
+      link: "#shopSection",
+      linkText: "Shop Now"
     },
     hero: {
       headline: "Timeless Elegance for <em>Modern Living</em>",
