@@ -94,7 +94,8 @@ window.MJ_INITIAL_DATA = {
       ],
       images: [
         "assets/images/duvet-sage.jpg",
-        "assets/images/bedsheets-luxury.jpg"
+        "assets/images/bedsheets-luxury.jpg",
+        "assets/images/hero-banner.jpg"
       ],
       description: "Pre-washed for instant lived-in coziness and buttery texture. Naturally temperature regulating to keep you cool in summer and cozy in winter.",
       specs: [
@@ -126,7 +127,9 @@ window.MJ_INITIAL_DATA = {
         { name: "Blush Speckled", hex: "#F8E1E7" }
       ],
       images: [
-        "assets/images/home-decor.jpg"
+        "assets/images/home-decor.jpg",
+        "assets/images/promo-seasonal.jpg",
+        "assets/images/hero-banner.jpg"
       ],
       description: "Infuse your sanctuary with tranquil Scandinavian warmth. Handcrafted matte stoneware vases complemented by a natural soy wax candle scented with Sandalwood, Fig, and delicate Vanilla.",
       specs: [
@@ -159,7 +162,9 @@ window.MJ_INITIAL_DATA = {
         { name: "Soft Sage", hex: "#88A891" }
       ],
       images: [
-        "assets/images/linen-menswear.jpg"
+        "assets/images/linen-menswear.jpg",
+        "assets/images/fashion-dress.jpg",
+        "assets/images/hero-banner.jpg"
       ],
       description: "Effortlessly sophisticated men's button-down shirt designed with a resort collar, relaxed fit, and natural mother-of-pearl buttons.",
       specs: [
@@ -192,7 +197,8 @@ window.MJ_INITIAL_DATA = {
       ],
       images: [
         "assets/images/promo-seasonal.jpg",
-        "assets/images/fashion-dress.jpg"
+        "assets/images/fashion-dress.jpg",
+        "assets/images/hero-banner.jpg"
       ],
       description: "Cloud-soft rib-knitted cardigan with dropped shoulders and oversized horn buttons. Perfect for transitional spring layering.",
       specs: [
@@ -225,7 +231,8 @@ window.MJ_INITIAL_DATA = {
       ],
       images: [
         "assets/images/home-decor.jpg",
-        "assets/images/bedsheets-luxury.jpg"
+        "assets/images/bedsheets-luxury.jpg",
+        "assets/images/promo-seasonal.jpg"
       ],
       description: "Sink into buttery-soft luxury with this artisan woven cushion, tailored with piping edges and plush cruelty-free insert.",
       specs: [
@@ -257,7 +264,8 @@ window.MJ_INITIAL_DATA = {
       ],
       images: [
         "assets/images/duvet-sage.jpg",
-        "assets/images/bedsheets-luxury.jpg"
+        "assets/images/bedsheets-luxury.jpg",
+        "assets/images/hero-banner.jpg"
       ],
       description: "Crafted from long-staple single-ply Egyptian cotton yarn for the smoothest touch and regal luster.",
       specs: [
