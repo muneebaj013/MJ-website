@@ -249,16 +249,32 @@
       </div>
     </section>
 
-    <!-- 7. Featured & Best Sellers Showcase -->
+    <!-- 7. Featured & Best Sellers Showcase (Interactive Carousel Slider) -->
     <section id="featuredSectionWrap" class="section-spacing" style="background: var(--bg-surface);">
       <div class="container">
-        <div class="section-header">
-          <span class="section-subtitle">Customer Favorites</span>
-          <h2 class="section-title">Featured & Best-Selling Products</h2>
-          <p class="section-desc">Our most cherished lifestyle pieces, lovingly selected by thousands of happy customers.</p>
+        <div class="section-header" style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:1.2rem; margin-bottom:2.2rem;">
+          <div>
+            <span class="section-subtitle">Customer Favorites</span>
+            <h2 class="section-title" style="margin-bottom:0.4rem;">Featured & Best-Selling Products</h2>
+            <p class="section-desc" style="margin-bottom:0;">Our most cherished lifestyle pieces, lovingly selected by thousands of happy customers.</p>
+          </div>
+
+          <!-- Carousel Controls -->
+          <div class="carousel-nav-controls" style="display:flex; align-items:center; gap:0.6rem;">
+            <button type="button" class="carousel-arrow-btn" onclick="window.MJCatalog.slideFeatured(-1)" title="Previous Featured" aria-label="Previous Featured">
+              ‹
+            </button>
+            <button type="button" class="carousel-arrow-btn" onclick="window.MJCatalog.slideFeatured(1)" title="Next Featured" aria-label="Next Featured">
+              ›
+            </button>
+          </div>
         </div>
-        <div id="featuredProductsGrid" class="product-grid">
-          <!-- Populated by JavaScript -->
+
+        <!-- Carousel Track -->
+        <div class="carousel-wrapper">
+          <div id="featuredProductsCarousel" class="carousel-track">
+            <!-- Populated dynamically by JavaScript -->
+          </div>
         </div>
       </div>
     </section>

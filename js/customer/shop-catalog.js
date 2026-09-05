@@ -235,6 +235,17 @@
       });
     },
 
+    slideFeatured(direction) {
+      const track = document.getElementById('featuredProductsCarousel');
+      if (!track) return;
+      const card = track.querySelector('.product-card');
+      const step = card ? (card.offsetWidth + 24) * 2 : 560;
+      track.scrollBy({
+        left: direction * step,
+        behavior: 'smooth'
+      });
+    },
+
     renderHomeSections() {
       // New Arrivals Interactive Carousel
       const newArrivalsCarousel = document.getElementById('newArrivalsCarousel');
@@ -257,11 +268,23 @@
         newArrivalsGridLegacy.innerHTML = contentHtml;
       }
 
-      // Featured Products Grid
-      const featuredGrid = document.getElementById('featuredProductsGrid');
-      if (featuredGrid) {
-        const featured = window.MJProductStore.getFeatured();
-        featuredGrid.innerHTML = (featured && featured.length) ? featured.map(p => this.renderProductCard(p)).join('') : '';
+      // Featured & Best Sellers Carousel Slider
+      const featuredCarousel = document.getElementById('featuredProductsCarousel');
+      const featuredGridLegacy = document.getElementById('featuredProductsGrid');
+      
+      const featured = window.MJProductStore.getFeatured();
+      const featuredHtml = (featured && featured.length > 0)
+        ? featured.map(p => this.renderProductCard(p)).join('')
+        : `
+          <div style="padding:3rem 1rem; text-align:center; width:100%; color:var(--color-text-muted); grid-column:1/-1;">
+            <p>No featured products marked yet.</p>
+          </div>
+        `;
+
+      if (featuredCarousel) {
+        featuredCarousel.innerHTML = featuredHtml;
+      } else if (featuredGridLegacy) {
+        featuredGridLegacy.innerHTML = featuredHtml;
       }
 
       // Best Sellers Grid
