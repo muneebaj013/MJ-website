@@ -7,7 +7,15 @@
       const initial = window.MJ_INITIAL_DATA || {};
       
       const prods = this.get('products');
-      if (!prods || !Array.isArray(prods) || prods.length === 0) this.set('products', initial.products || []);
+      if (!prods || !Array.isArray(prods) || prods.length === 0) {
+        this.set('products', initial.products || []);
+      } else if (initial.products && Array.isArray(initial.products)) {
+        const existingIds = new Set(prods.map(p => p.id));
+        const missing = initial.products.filter(p => !existingIds.has(p.id));
+        if (missing.length > 0) {
+          this.set('products', [...prods, ...missing]);
+        }
+      }
       
       const cats = this.get('categories');
       if (!cats || !Array.isArray(cats) || cats.length === 0) this.set('categories', initial.categories || []);

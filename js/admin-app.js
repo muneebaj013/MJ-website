@@ -500,12 +500,19 @@
                   <tr>
                     <td>
                       <div class="d-flex align-center gap-2">
-                        <img src="${p.images[0]}" alt="${p.name}" class="table-thumb">
+                        <img src="${p.images[0]}" alt="${p.name}" class="table-thumb" style="border-radius:4px;">
                         <div>
                           <strong>${p.name}</strong>
-                          <div style="font-size:0.75rem; color:var(--color-text-muted);">
-                            ${p.isFeatured ? '<span class="badge badge-best" style="font-size:0.65rem; padding:0.1rem 0.4rem;">Featured</span>' : ''}
-                            ${p.isBestSeller ? '<span class="badge badge-new" style="font-size:0.65rem; padding:0.1rem 0.4rem;">Best Seller</span>' : ''}
+                          <div style="font-size:0.75rem; display:flex; flex-wrap:wrap; gap:0.3rem; margin-top:0.2rem;">
+                            <span class="badge ${p.isNew ? 'badge-new' : ''}" style="font-size:0.65rem; padding:0.1rem 0.4rem; cursor:pointer; border:1px solid ${p.isNew ? 'transparent' : 'var(--border-color)'}; background:${p.isNew ? '' : '#fff'}; color:${p.isNew ? '' : 'var(--color-text-muted)'};" onclick="window.MJAdmin.toggleProductFlag('${p.id}', 'isNew')" title="Click to Toggle New Arrival">
+                              ${p.isNew ? '🆕 New Arrival' : '+ New Arrival'}
+                            </span>
+                            <span class="badge ${p.isFeatured ? 'badge-best' : ''}" style="font-size:0.65rem; padding:0.1rem 0.4rem; cursor:pointer; border:1px solid ${p.isFeatured ? 'transparent' : 'var(--border-color)'}; background:${p.isFeatured ? '' : '#fff'}; color:${p.isFeatured ? '' : 'var(--color-text-muted)'};" onclick="window.MJAdmin.toggleProductFlag('${p.id}', 'isFeatured')" title="Click to Toggle Featured">
+                              ${p.isFeatured ? '⭐ Featured' : '+ Featured'}
+                            </span>
+                            <span class="badge" style="font-size:0.65rem; padding:0.1rem 0.4rem; cursor:pointer; border:1px solid ${p.isBestSeller ? 'transparent' : 'var(--border-color)'}; background:${p.isBestSeller ? '#FFF3CD' : '#fff'}; color:${p.isBestSeller ? '#856404' : 'var(--color-text-muted)'};" onclick="window.MJAdmin.toggleProductFlag('${p.id}', 'isBestSeller')" title="Click to Toggle Best Seller">
+                              ${p.isBestSeller ? '🔥 Best Seller' : '+ Best Seller'}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -667,14 +674,18 @@
                   <textarea name="description" class="form-control" rows="3" placeholder="Describe the soft aesthetic, fit, and elegance...">${p ? p.description : ''}</textarea>
                 </div>
 
-                <div class="form-row" style="margin-top:1rem;">
+                <div class="form-row" style="margin-top:1rem; display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:0.8rem;">
+                  <label class="filter-checkbox-label">
+                    <input type="checkbox" name="isNew" ${p ? (p.isNew ? 'checked' : '') : 'checked'}>
+                    <span>🆕 <strong>New Arrival</strong> (Show in Carousel)</span>
+                  </label>
                   <label class="filter-checkbox-label">
                     <input type="checkbox" name="isFeatured" ${p && p.isFeatured ? 'checked' : ''}>
-                    <span>⭐ Mark as Featured on Homepage</span>
+                    <span>⭐ <strong>Featured</strong> on Homepage</span>
                   </label>
                   <label class="filter-checkbox-label">
                     <input type="checkbox" name="isBestSeller" ${p && p.isBestSeller ? 'checked' : ''}>
-                    <span>🔥 Mark as Best Seller</span>
+                    <span>🔥 <strong>Best Seller</strong></span>
                   </label>
                 </div>
 
@@ -841,7 +852,7 @@
         description: form.description.value.trim(),
         isFeatured: form.isFeatured.checked,
         isBestSeller: form.isBestSeller.checked,
-        isNew: true
+        isNew: form.isNew.checked
       };
 
       if (existingId) {
@@ -853,6 +864,17 @@
       }
 
       document.getElementById('adminProductEditModal').remove();
+      this.renderProducts();
+    },
+
+    toggleProductFlag(productId, flagName) {
+      const p = window.MJProductStore.getById(productId);
+      if (!p) return;
+      const newVal = !p[flagName];
+      window.MJProductStore.updateProduct(productId, { [flagName]: newVal });
+      
+      const label = flagName === 'isNew' ? 'New Arrival status' : (flagName === 'isFeatured' ? 'Featured status' : 'Best Seller status');
+      window.MJToast.info(`"${p.name}" ${label} is now ${newVal ? 'Active ✅' : 'Disabled ❌'}.`);
       this.renderProducts();
     },
 

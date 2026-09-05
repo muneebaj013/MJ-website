@@ -1032,6 +1032,96 @@
   transform: translateY(-2px);
 }
 
+/* ================= Carousel Track & Slider Styles ================= */
+.carousel-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 0.5rem 0.2rem 1.2rem;
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-track .product-card {
+  flex: 0 0 calc(25% - 1.15rem);
+  min-width: 270px;
+  scroll-snap-align: start;
+  margin-bottom: 0;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.carousel-arrow-btn {
+  width: 44px;
+  height: 44px;
+  font-size: 1.6rem;
+  font-weight: 300;
+  background: #ffffff;
+  color: var(--color-heading);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  transition: all var(--transition-fast);
+}
+
+.carousel-arrow-btn:hover {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+  transform: scale(1.06);
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 1200px) {
+  .carousel-track .product-card {
+    flex: 0 0 calc(33.333% - 1rem);
+    min-width: 240px;
+  }
+}
+
+@media (max-width: 860px) {
+  .carousel-track .product-card {
+    flex: 0 0 calc(50% - 0.75rem);
+    min-width: 220px;
+  }
+}
+
+@media (max-width: 576px) {
+  .carousel-track {
+    gap: 0.8rem;
+  }
+  .carousel-track .product-card {
+    flex: 0 0 calc(65% - 0.5rem);
+    min-width: 180px;
+  }
+  .carousel-arrow-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .carousel-track .product-card {
+    flex: 0 0 85%;
+    min-width: 220px;
+  }
+}
+
 /* Responsive Breakpoints & Device Optimizations */
 @media (max-width: 1200px) {
   .product-grid {

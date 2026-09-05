@@ -200,6 +200,71 @@ window.MJ_INITIAL_DATA = {
         "Chic ribbed texture and relaxed drape",
         "Dry clean or hand wash cold"
       ]
+    },
+    {
+      id: "prod-7",
+      sku: "MJ-ACC-007",
+      name: "Velvet Bloom Throw Pillow & Linen Cushion",
+      slug: "velvet-bloom-throw-pillow-linen-cushion",
+      category: "Home Collection",
+      subcategory: "Linen Throws & Cushions",
+      price: 42.00,
+      salePrice: 34.00,
+      stock: 20,
+      isFeatured: true,
+      isBestSeller: false,
+      isNew: true,
+      rating: 4.8,
+      reviewCount: 16,
+      material: "Plush Cotton Velvet & Duck Feather Fill",
+      sizes: ["18x18 inches", "20x20 inches"],
+      colors: [
+        { name: "Dusty Rose", hex: "#D99AA8" },
+        { name: "Warm Beige", hex: "#E8D8CF" },
+        { name: "Sage Mist", hex: "#88A891" }
+      ],
+      images: [
+        "assets/images/home-decor.jpg",
+        "assets/images/bedsheets-luxury.jpg"
+      ],
+      description: "Sink into buttery-soft luxury with this artisan woven cushion, tailored with piping edges and plush cruelty-free insert.",
+      specs: [
+        "Cover: 100% Cotton Velvet with hidden zipper",
+        "Insert: 100% Premium Microfiber hypoallergenic fill",
+        "Spot clean or gentle hand wash"
+      ]
+    },
+    {
+      id: "prod-8",
+      sku: "MJ-DVT-008",
+      name: "Belgian Heirloom Sateen Duvet Cover in Rose",
+      slug: "belgian-heirloom-sateen-duvet-cover-rose",
+      category: "Bedsheets",
+      subcategory: "Duvet Covers",
+      price: 135.00,
+      salePrice: 108.00,
+      stock: 11,
+      isFeatured: false,
+      isBestSeller: true,
+      isNew: true,
+      rating: 5.0,
+      reviewCount: 28,
+      material: "1000TC Egyptian Cotton Sateen",
+      sizes: ["Queen", "King"],
+      colors: [
+        { name: "Dusty Rose", hex: "#D99AA8" },
+        { name: "Warm Cream", hex: "#FFF8F5" }
+      ],
+      images: [
+        "assets/images/duvet-sage.jpg",
+        "assets/images/bedsheets-luxury.jpg"
+      ],
+      description: "Crafted from long-staple single-ply Egyptian cotton yarn for the smoothest touch and regal luster.",
+      specs: [
+        "Includes 1 Duvet Cover + 2 Matching Euro Shams",
+        "1000 Thread Count Sateen Weave",
+        "Machine washable with cold water"
+      ]
     }
   ],
 

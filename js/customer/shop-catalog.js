@@ -224,26 +224,51 @@
       this.updateActiveFilterPills();
     },
 
+    slideNewArrivals(direction) {
+      const track = document.getElementById('newArrivalsCarousel');
+      if (!track) return;
+      const card = track.querySelector('.product-card');
+      const step = card ? (card.offsetWidth + 24) * 2 : 560;
+      track.scrollBy({
+        left: direction * step,
+        behavior: 'smooth'
+      });
+    },
+
     renderHomeSections() {
-      // New Arrivals Grid
-      const newArrivalsGrid = document.getElementById('newArrivalsGrid');
-      if (newArrivalsGrid) {
-        const newArrivals = window.MJProductStore.getNewArrivals().slice(0, 4);
-        newArrivalsGrid.innerHTML = newArrivals.map(p => this.renderProductCard(p)).join('');
+      // New Arrivals Interactive Carousel
+      const newArrivalsCarousel = document.getElementById('newArrivalsCarousel');
+      const newArrivalsGridLegacy = document.getElementById('newArrivalsGrid');
+      
+      const newArrivals = window.MJProductStore.getNewArrivals();
+      const contentHtml = (newArrivals && newArrivals.length > 0)
+        ? newArrivals.map(p => this.renderProductCard(p)).join('')
+        : `
+          <div style="padding:3rem 1rem; text-align:center; width:100%; color:var(--color-text-muted); grid-column:1/-1;">
+            <div style="font-size:2rem; margin-bottom:0.5rem;">🌸</div>
+            <p>No products are currently marked as New Arrivals.</p>
+            <p style="font-size:0.85rem;">Mark products as "New Arrival" in the Admin Panel to display them here.</p>
+          </div>
+        `;
+
+      if (newArrivalsCarousel) {
+        newArrivalsCarousel.innerHTML = contentHtml;
+      } else if (newArrivalsGridLegacy) {
+        newArrivalsGridLegacy.innerHTML = contentHtml;
       }
 
       // Featured Products Grid
       const featuredGrid = document.getElementById('featuredProductsGrid');
       if (featuredGrid) {
-        const featured = window.MJProductStore.getFeatured().slice(0, 4);
-        featuredGrid.innerHTML = featured.map(p => this.renderProductCard(p)).join('');
+        const featured = window.MJProductStore.getFeatured();
+        featuredGrid.innerHTML = (featured && featured.length) ? featured.map(p => this.renderProductCard(p)).join('') : '';
       }
 
       // Best Sellers Grid
       const bestSellersGrid = document.getElementById('bestSellersGrid');
       if (bestSellersGrid) {
-        const bestSellers = window.MJProductStore.getBestSellers().slice(0, 4);
-        bestSellersGrid.innerHTML = bestSellers.map(p => this.renderProductCard(p)).join('');
+        const bestSellers = window.MJProductStore.getBestSellers();
+        bestSellersGrid.innerHTML = (bestSellers && bestSellers.length) ? bestSellers.map(p => this.renderProductCard(p)).join('') : '';
       }
 
       // Categories Grid

@@ -182,18 +182,35 @@
       </div>
     </section>
 
-    <!-- 5. New Arrivals Section -->
+    <!-- 5. New Arrivals Section (Interactive Carousel Slider) -->
     <section id="newArrivalsSectionWrap" class="section-spacing" style="background: var(--bg-subtle);">
       <div class="container">
-        <div class="section-header">
-          <span class="section-subtitle">Freshly Added</span>
-          <h2 class="section-title">New Season Arrivals</h2>
-          <p class="section-desc">Discover the newest additions to our fashion and home collection.</p>
+        <div class="section-header" style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:1.2rem; margin-bottom:2.2rem;">
+          <div>
+            <span class="section-subtitle">Freshly Added</span>
+            <h2 class="section-title" style="margin-bottom:0.4rem;">New Season Arrivals</h2>
+            <p class="section-desc" style="margin-bottom:0;">Hand-picked new additions curated for serene luxury living.</p>
+          </div>
+
+          <!-- Carousel Controls -->
+          <div class="carousel-nav-controls" style="display:flex; align-items:center; gap:0.6rem;">
+            <button type="button" class="carousel-arrow-btn" onclick="window.MJCatalog.slideNewArrivals(-1)" title="Previous Arrivals" aria-label="Previous Arrivals">
+              ‹
+            </button>
+            <button type="button" class="carousel-arrow-btn" onclick="window.MJCatalog.slideNewArrivals(1)" title="Next Arrivals" aria-label="Next Arrivals">
+              ›
+            </button>
+          </div>
         </div>
-        <div id="newArrivalsGrid" class="product-grid">
-          <!-- Populated by JavaScript -->
+
+        <!-- Carousel Track -->
+        <div class="carousel-wrapper">
+          <div id="newArrivalsCarousel" class="carousel-track">
+            <!-- Populated dynamically by shop-catalog.js -->
+          </div>
         </div>
-        <div class="text-center" style="margin-top: 3rem;">
+
+        <div class="text-center" style="margin-top: 2.8rem;">
           <a href="#shopSection" class="btn btn-outline btn-lg" onclick="window.MJCatalog.setCategory('all')">
             Explore All New Arrivals →
           </a>
