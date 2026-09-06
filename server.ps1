@@ -17,6 +17,8 @@ while ($listener.IsListening) {
         $rawUrl = $request.Url.LocalPath
         if ($rawUrl -eq "/" -or $rawUrl -eq "") {
             $rawUrl = "/index.html"
+        } elseif ($rawUrl -eq "/admin" -or $rawUrl -eq "/admin/") {
+            $rawUrl = "/admin.html"
         }
 
         $filePath = [System.IO.Path]::Combine($path, $rawUrl.TrimStart('/'))
