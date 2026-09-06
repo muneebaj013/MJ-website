@@ -216,6 +216,9 @@
         case 'settings':
           this.renderSettings();
           break;
+        case 'supabase':
+          this.renderSupabaseSettings();
+          break;
       }
     },
 
@@ -1299,13 +1302,25 @@
       if (!container) return;
 
       const customers = window.MJStorage.get('customers') || [];
+      const isSupabaseActive = window.MJSupabase && window.MJSupabase.isConfigured();
 
       container.innerHTML = `
         <div class="data-card">
           <div class="data-card-header">
             <div>
-              <h3 style="font-family:var(--font-heading); font-size:1.6rem;">Registered Customer Directory</h3>
-              <p style="color:var(--color-text-muted); font-size:0.9rem;">View customer lifetime orders and purchase value.</p>
+              <div class="d-flex align-center gap-1">
+                <h3 style="font-family:var(--font-heading); font-size:1.6rem; margin:0;">Registered Customer Directory</h3>
+                ${isSupabaseActive ? '<span class="badge badge-success" style="font-size:0.75rem;">⚡ Supabase Cloud Active</span>' : '<span class="badge" style="background:#F59E0B; color:#fff; font-size:0.75rem;">Local Storage Mode</span>'}
+              </div>
+              <p style="color:var(--color-text-muted); font-size:0.9rem; margin-top:0.3rem;">View customer lifetime orders and purchase value.</p>
+            </div>
+            <div class="d-flex gap-1">
+              <button class="btn btn-outline btn-sm" id="btnSyncSupabaseCustomers" onclick="window.MJAdmin.syncSupabaseCustomers()">
+                ⚡ Sync Supabase Users
+              </button>
+              <button class="btn btn-primary btn-sm" onclick="window.MJAdmin.switchTab('supabase')">
+                ⚙️ Database Config
+              </button>
             </div>
           </div>
 
@@ -1322,7 +1337,13 @@
                 </tr>
               </thead>
               <tbody>
-                ${customers.map(c => `
+                ${customers.length === 0 ? `
+                  <tr>
+                    <td colspan="6" style="text-align:center; padding:2rem; color:var(--color-text-muted);">
+                      No registered customers found.
+                    </td>
+                  </tr>
+                ` : customers.map(c => `
                   <tr>
                     <td>
                       <strong>${c.name}</strong>
@@ -2145,6 +2166,237 @@
       window.MJStorage.set('notifications', notifs);
       this.updateNotifications();
       document.getElementById('adminNotifsModal').remove();
+    },
+
+    // ================= 12. SUPABASE DATABASE & AUTH INTEGRATION =================
+    renderSupabaseSettings() {
+      const container = document.getElementById('tab-supabase');
+      if (!container) return;
+
+      const creds = window.MJSupabase ? window.MJSupabase.getCredentials() : { url: '', anonKey: '' };
+      const isConfigured = window.MJSupabase ? window.MJSupabase.isConfigured() : false;
+
+      container.innerHTML = `
+        <!-- Header Status Card -->
+        <div class="data-card" style="margin-bottom:2rem;">
+          <div class="data-card-header">
+            <div>
+              <div class="d-flex align-center gap-1">
+                <h3 style="font-family:var(--font-heading); font-size:1.8rem; margin:0;">⚡ Supabase Cloud Database & Authentication</h3>
+                ${isConfigured 
+                  ? '<span class="badge badge-success" style="font-size:0.85rem; padding:4px 10px;">🟢 Live Connected</span>' 
+                  : '<span class="badge" style="background:#F59E0B; color:#fff; font-size:0.85rem; padding:4px 10px;">🟠 Setup Required</span>'
+                }
+              </div>
+              <p style="color:var(--color-text-muted); font-size:0.92rem; margin-top:0.4rem;">
+                Connect your Supabase project so customer sign up, sign in, and user credentials store securely in PostgreSQL cloud tables.
+              </p>
+            </div>
+            <a href="https://supabase.com/dashboard" target="_blank" class="btn btn-outline btn-sm" style="display:inline-flex; align-items:center; gap:0.4rem;">
+              ↗ Open Supabase Dashboard
+            </a>
+          </div>
+
+          <div style="padding:1.8rem;">
+            <!-- Live Test Banner Container -->
+            <div id="supabaseTestStatusBanner" style="display:none; margin-bottom:1.5rem; padding:1rem 1.4rem; border-radius:var(--radius-sm); font-size:0.92rem;"></div>
+
+            <!-- Credentials Form -->
+            <form onsubmit="window.MJAdmin.saveSupabaseSettings(event)">
+              <div class="form-group" style="margin-bottom:1.2rem;">
+                <label class="form-label" style="font-weight:600;">Supabase Project URL *</label>
+                <input type="url" id="supabaseSettingUrl" class="form-control" required value="${creds.url}" placeholder="https://xyzprojectref.supabase.co" style="font-family:monospace; font-size:0.95rem;">
+                <small style="color:var(--color-text-muted); font-size:0.8rem;">Found in Supabase Dashboard → Project Settings → API → Project URL</small>
+              </div>
+
+              <div class="form-group" style="margin-bottom:1.4rem;">
+                <label class="form-label" style="font-weight:600;">Supabase Anon Public API Key *</label>
+                <textarea id="supabaseSettingKey" class="form-control" rows="3" required placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="font-family:monospace; font-size:0.85rem;">${creds.anonKey}</textarea>
+                <small style="color:var(--color-text-muted); font-size:0.8rem;">Found in Supabase Dashboard → Project Settings → API → Project API Keys (anon public)</small>
+              </div>
+
+              <div class="d-flex align-center gap-2 flex-wrap">
+                <button type="submit" id="btnSaveSupabaseCreds" class="btn btn-primary">
+                  💾 Save & Connect Supabase
+                </button>
+                <button type="button" id="btnTestSupabaseConn" class="btn btn-outline" onclick="window.MJAdmin.testSupabaseConnection()">
+                  🧪 Test Live Connection
+                </button>
+                <button type="button" class="btn btn-soft" onclick="window.MJAdmin.syncSupabaseCustomers()">
+                  🔄 Sync Customers Now
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- SQL Schema Setup Card -->
+        <div class="data-card" style="margin-bottom:2rem;">
+          <div class="data-card-header">
+            <div>
+              <h3 style="font-family:var(--font-heading); font-size:1.5rem; margin:0;">📋 1-Click Supabase SQL Setup Script</h3>
+              <p style="color:var(--color-text-muted); font-size:0.88rem; margin-top:0.3rem;">
+                Copy and paste this script once into your Supabase <strong>SQL Editor</strong> to automatically create the <code>customers</code> and <code>orders</code> database tables with secure permissions.
+              </p>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="window.MJAdmin.copySupabaseSQL()">
+              📋 Copy Complete SQL Script
+            </button>
+          </div>
+
+          <div style="padding:1.4rem 1.8rem;">
+            <div style="background:#1e1e24; color:#d4d4d8; padding:1.2rem; border-radius:var(--radius-sm); font-family:Consolas, Monaco, monospace; font-size:0.82rem; max-height:280px; overflow-y:auto; line-height:1.5;">
+              <pre style="margin:0; white-space:pre-wrap;">${window.MJSupabase ? window.MJSupabase.getSQLSchema() : '-- Loading SQL...'}</pre>
+            </div>
+            <div style="margin-top:1rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.8rem;">
+              <span style="font-size:0.84rem; color:var(--color-text-muted);">
+                💡 In Supabase: Click <strong>SQL Editor</strong> in left menu → <strong>New Query</strong> → Paste → Click <strong>Run</strong>.
+              </span>
+              <button class="btn btn-outline btn-sm" onclick="window.MJAdmin.copySupabaseSQL()">
+                📋 Copy SQL Script
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- How It Works Guide -->
+        <div class="data-card">
+          <div class="data-card-header">
+            <div>
+              <h3 style="font-family:var(--font-heading); font-size:1.4rem; margin:0;">🚀 How Customer Authentication Works with Supabase</h3>
+            </div>
+          </div>
+          <div style="padding:1.5rem 1.8rem;">
+            <div class="admin-grid-3" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:1.2rem;">
+              <div style="background:var(--bg-subtle); padding:1.2rem; border-radius:var(--radius-sm); border:1px solid var(--border-color-light);">
+                <div style="font-size:1.8rem; margin-bottom:0.5rem;">1️⃣</div>
+                <h4 style="font-family:var(--font-heading); font-size:1.15rem; margin-bottom:0.3rem;">Customer Signs Up</h4>
+                <p style="font-size:0.85rem; color:var(--color-text-muted); margin:0;">
+                  Customer enters Name, Email, Phone, and Password on the storefront modal. Supabase Auth creates their secure credentials.
+                </p>
+              </div>
+
+              <div style="background:var(--bg-subtle); padding:1.2rem; border-radius:var(--radius-sm); border:1px solid var(--border-color-light);">
+                <div style="font-size:1.8rem; margin-bottom:0.5rem;">2️⃣</div>
+                <h4 style="font-family:var(--font-heading); font-size:1.15rem; margin-bottom:0.3rem;">Stored in PostgreSQL</h4>
+                <p style="font-size:0.85rem; color:var(--color-text-muted); margin:0;">
+                  Their details are automatically written into the Supabase <code>customers</code> cloud table with joined date and contact info.
+                </p>
+              </div>
+
+              <div style="background:var(--bg-subtle); padding:1.2rem; border-radius:var(--radius-sm); border:1px solid var(--border-color-light);">
+                <div style="font-size:1.8rem; margin-bottom:0.5rem;">3️⃣</div>
+                <h4 style="font-family:var(--font-heading); font-size:1.15rem; margin-bottom:0.3rem;">Sign In & Orders</h4>
+                <p style="font-size:0.85rem; color:var(--color-text-muted); margin:0;">
+                  Returning clients sign in with their password anywhere, load their order tracking, and appear live in the Admin Directory.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    },
+
+    saveSupabaseSettings(e) {
+      e.preventDefault();
+      const url = document.getElementById('supabaseSettingUrl').value.trim();
+      const anonKey = document.getElementById('supabaseSettingKey').value.trim();
+
+      if (!url || !anonKey) {
+        window.MJToast.error('Please enter both Supabase URL and Anon Key.');
+        return;
+      }
+
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        window.MJToast.error('Supabase URL must start with https://');
+        return;
+      }
+
+      const res = window.MJSupabase.saveCredentials(url, anonKey);
+      if (res.success) {
+        window.MJToast.success('Supabase configuration saved!');
+        this.renderSupabaseSettings();
+        // Run quick connection test automatically
+        this.testSupabaseConnection();
+      } else {
+        window.MJToast.error(res.message || 'Failed to save settings.');
+      }
+    },
+
+    async testSupabaseConnection() {
+      const btn = document.getElementById('btnTestSupabaseConn');
+      const banner = document.getElementById('supabaseTestStatusBanner');
+
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳ Testing...';
+      }
+
+      if (banner) {
+        banner.style.display = 'block';
+        banner.style.background = 'var(--bg-accent-light)';
+        banner.style.color = 'var(--color-heading)';
+        banner.style.border = '1px solid var(--border-color)';
+        banner.innerHTML = '⏳ Contacting Supabase cloud servers...';
+      }
+
+      const result = await window.MJSupabase.testConnection();
+
+      if (banner) {
+        if (result.success) {
+          banner.style.background = 'rgba(16, 185, 129, 0.12)';
+          banner.style.color = '#065f46';
+          banner.style.border = '1px solid #10B981';
+          banner.innerHTML = `<strong>🟢 Connection Successful!</strong><br>${result.message}`;
+          window.MJToast.success('Connected to Supabase successfully!');
+        } else {
+          banner.style.background = 'rgba(239, 68, 68, 0.12)';
+          banner.style.color = '#991b1b';
+          banner.style.border = '1px solid #EF4444';
+          banner.innerHTML = `<strong>🔴 Connection Failed:</strong><br>${result.message}`;
+          window.MJToast.error(result.message);
+        }
+      }
+
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = '🧪 Test Live Connection';
+      }
+    },
+
+    async copySupabaseSQL() {
+      const ok = await window.MJSupabase.copySQLSchema();
+      if (ok) {
+        window.MJToast.success('📋 Supabase SQL Schema copied to clipboard! Paste it into Supabase SQL Editor.');
+      } else {
+        window.MJToast.error('Could not copy SQL automatically. Please select and copy the text manually.');
+      }
+    },
+
+    async syncSupabaseCustomers() {
+      const btn = document.getElementById('btnSyncSupabaseCustomers');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳ Syncing...';
+      }
+
+      try {
+        const res = await window.MJAuth.fetchRemoteCustomers();
+        if (res.success) {
+          window.MJToast.success(`Synced ${res.count || 0} customer records from Supabase!`);
+          this.renderCustomers();
+          this.updateKPIs();
+        } else {
+          window.MJToast.info(res.message || 'Could not fetch remote customers.');
+        }
+      } catch (err) {
+        window.MJToast.error('Sync error: ' + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = '⚡ Sync Supabase Users';
+        }
+      }
     }
   };
 

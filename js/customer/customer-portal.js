@@ -1,10 +1,12 @@
-// Customer Account & Profile Portal Module
+// Customer Account & Profile Portal Module (Supabase + Local + Forgot Password)
 (function() {
   window.MJPortal = {
     activeTab: 'orders', // 'orders', 'wishlist', 'profile'
+    authView: 'login',   // 'login', 'register', 'forgot', 'new_password'
 
-    open(tab = null) {
+    open(tab = null, view = null) {
       if (tab) this.activeTab = tab;
+      if (view) this.authView = view;
       const modal = document.getElementById('customerAccountModal');
       if (modal) {
         modal.classList.add('active');
@@ -39,39 +41,56 @@
       if (!container) return;
 
       const user = window.MJAuth ? window.MJAuth.getCustomer() : null;
+      const isSupabaseActive = window.MJSupabase && window.MJSupabase.isConfigured();
       this.updateHeaderAccountStatus();
 
       if (!user) {
-        // Show Clean Sign In / Register Forms
+        // Show Clean Sign In / Register / Forgot Password Forms
         container.innerHTML = `
           <div style="max-width:440px; margin: 0 auto; padding: 0.5rem 0;">
-            <div style="text-align:center; margin-bottom:1.6rem;">
+            <div style="text-align:center; margin-bottom:1.4rem;">
               <h3 style="font-family:var(--font-heading); font-size:2.2rem; margin-bottom:0.3rem;">Welcome to MJ</h3>
-              <p style="color:var(--color-text-muted); font-size:0.92rem;">Sign in to view your order history, track deliveries, and manage your account.</p>
+              <p style="color:var(--color-text-muted); font-size:0.92rem; margin-bottom:0.6rem;">Sign in to view your order history, track deliveries, and manage your account.</p>
+              
+              <!-- Supabase Cloud Connection Status Badge -->
+              <div style="display:inline-flex; align-items:center; gap:0.4rem; padding:0.25rem 0.75rem; border-radius:var(--radius-pill); font-size:0.76rem; font-weight:600; background:${isSupabaseActive ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)'}; color:${isSupabaseActive ? '#059669' : '#D97706'}; border:1px solid ${isSupabaseActive ? 'rgba(16, 185, 129, 0.3)' : 'rgba(245, 158, 11, 0.3)'};">
+                <span style="width:6px; height:6px; border-radius:50%; background:${isSupabaseActive ? '#10B981' : '#F59E0B'};"></span>
+                <span>${isSupabaseActive ? '⚡ Supabase Cloud Database Connected' : '💾 Local Storage Mode (Supabase Setup in Admin)'}</span>
+              </div>
             </div>
 
-            <!-- Tab Switcher -->
-            <div class="d-flex gap-2" style="margin-bottom:1.5rem; background:var(--bg-subtle); padding:4px; border-radius:var(--radius-pill); border:1px solid var(--border-color-light);">
-              <button type="button" class="btn btn-sm w-100" id="portalTabBtnLogin" onclick="window.MJPortal.toggleAuthView('login')" style="background:var(--color-primary); color:#fff; border-radius:var(--radius-pill); font-weight:600;">
+            <!-- Tab Switcher (Visible in login & register modes) -->
+            <div id="portalAuthTabSwitcher" class="d-flex gap-2" style="margin-bottom:1.5rem; background:var(--bg-subtle); padding:4px; border-radius:var(--radius-pill); border:1px solid var(--border-color-light); ${this.authView === 'forgot' || this.authView === 'new_password' ? 'display:none !important;' : ''}">
+              <button type="button" class="btn btn-sm w-100" id="portalTabBtnLogin" onclick="window.MJPortal.toggleAuthView('login')" style="background:${this.authView === 'login' ? 'var(--color-primary)' : 'transparent'}; color:${this.authView === 'login' ? '#fff' : 'var(--color-heading)'}; border-radius:var(--radius-pill); font-weight:600;">
                 Sign In
               </button>
-              <button type="button" class="btn btn-sm w-100" id="portalTabBtnRegister" onclick="window.MJPortal.toggleAuthView('register')" style="background:transparent; color:var(--color-heading); border-radius:var(--radius-pill); font-weight:600;">
+              <button type="button" class="btn btn-sm w-100" id="portalTabBtnRegister" onclick="window.MJPortal.toggleAuthView('register')" style="background:${this.authView === 'register' ? 'var(--color-primary)' : 'transparent'}; color:${this.authView === 'register' ? '#fff' : 'var(--color-heading)'}; border-radius:var(--radius-pill); font-weight:600;">
                 Create Account
               </button>
             </div>
 
-            <!-- 1. Sign In Form -->
-            <div id="portalFormLoginWrap">
+            <!-- 1. SIGN IN FORM -->
+            <div id="portalFormLoginWrap" style="${this.authView === 'login' ? 'display:block;' : 'display:none;'}">
               <form onsubmit="window.MJPortal.handleLogin(event)">
                 <div class="form-group">
                   <label class="form-label">Email Address *</label>
-                  <input type="email" name="email" id="portalLoginEmail" class="form-control" required placeholder="Enter your registered email">
+                  <input type="email" name="email" id="portalLoginEmail" class="form-control" required placeholder="Enter your registered email" autocomplete="email">
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Password *</label>
-                  <input type="password" name="password" id="portalLoginPassword" class="form-control" required placeholder="Enter password">
+                  <div class="d-flex justify-between align-center" style="margin-bottom:0.4rem;">
+                    <label class="form-label" style="margin-bottom:0; font-weight:600;">Password *</label>
+                    <a href="javascript:void(0)" onclick="window.MJPortal.toggleAuthView('forgot')" style="font-size:0.85rem; color:var(--color-primary-dark); font-weight:600; text-decoration:underline; cursor:pointer;">
+                      Forgot Password?
+                    </a>
+                  </div>
+                  <input type="password" name="password" id="portalLoginPassword" class="form-control" required placeholder="Enter password" autocomplete="current-password">
+                  <div style="text-align:right; margin-top:0.35rem;">
+                    <a href="javascript:void(0)" onclick="window.MJPortal.toggleAuthView('forgot')" style="font-size:0.82rem; color:var(--color-primary-dark); font-weight:500; text-decoration:none; cursor:pointer;">
+                      🔑 Forgot your password? Click here to reset
+                    </a>
+                  </div>
                 </div>
-                <button type="submit" class="btn btn-primary btn-lg w-100" style="margin-top:0.8rem;">
+                <button type="submit" id="portalLoginSubmitBtn" class="btn btn-primary btn-lg w-100" style="margin-top:0.8rem;">
                   Sign In to Account →
                 </button>
               </form>
@@ -80,30 +99,31 @@
               </div>
             </div>
 
-            <!-- 2. Create Account Form -->
-            <div id="portalFormRegisterWrap" style="display:none;">
+            <!-- 2. CREATE ACCOUNT FORM -->
+            <div id="portalFormRegisterWrap" style="${this.authView === 'register' ? 'display:block;' : 'display:none;'}">
               <form onsubmit="window.MJPortal.handleRegister(event)">
                 <div class="form-group">
                   <label class="form-label">Full Name *</label>
-                  <input type="text" name="name" class="form-control" required placeholder="e.g. Eleanor Vance">
+                  <input type="text" name="name" id="portalRegisterName" class="form-control" required placeholder="e.g. Eleanor Vance" autocomplete="name">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Email Address *</label>
-                  <input type="email" name="email" class="form-control" required placeholder="name@example.com">
+                  <input type="email" name="email" id="portalRegisterEmail" class="form-control" required placeholder="name@example.com" autocomplete="email">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Phone Number (Optional)</label>
-                  <input type="tel" name="phone" class="form-control" placeholder="+92 (300) 000-0000">
+                  <input type="tel" name="phone" id="portalRegisterPhone" class="form-control" placeholder="+92 (300) 000-0000" autocomplete="tel">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Delivery Address (Optional)</label>
-                  <input type="text" name="address" class="form-control" placeholder="House #, Street, City">
+                  <input type="text" name="address" id="portalRegisterAddress" class="form-control" placeholder="House #, Street, City" autocomplete="street-address">
                 </div>
                 <div class="form-group">
                   <label class="form-label">Create Password *</label>
-                  <input type="password" name="password" class="form-control" required placeholder="At least 6 characters">
+                  <input type="password" name="password" id="portalRegisterPassword" class="form-control" required minlength="6" placeholder="At least 6 characters" autocomplete="new-password">
+                  <small style="color:var(--color-text-muted); font-size:0.78rem;">Must be minimum 6 characters for cloud database security.</small>
                 </div>
-                <button type="submit" class="btn btn-primary btn-lg w-100" style="margin-top:0.8rem;">
+                <button type="submit" id="portalRegisterSubmitBtn" class="btn btn-primary btn-lg w-100" style="margin-top:0.8rem;">
                   Register & Create Account →
                 </button>
               </form>
@@ -111,6 +131,71 @@
                 Already have an account? <a href="javascript:void(0)" onclick="window.MJPortal.toggleAuthView('login')" style="color:var(--color-primary-dark); font-weight:600; text-decoration:underline;">Sign in here</a>
               </div>
             </div>
+
+            <!-- 3. FORGOT PASSWORD FORM -->
+            <div id="portalFormForgotWrap" style="${this.authView === 'forgot' ? 'display:block;' : 'display:none;'}">
+              <div style="text-align:center; margin-bottom:1.4rem;">
+                <div style="font-size:2.4rem; margin-bottom:0.4rem;">🔑</div>
+                <h4 style="font-family:var(--font-heading); font-size:1.6rem; margin-bottom:0.3rem;">Forgot Password</h4>
+                <p style="color:var(--color-text-muted); font-size:0.88rem; line-height:1.5;">
+                  Enter the email address associated with your account and we'll send you instructions to reset your password.
+                </p>
+              </div>
+
+              <div id="portalForgotStatusAlert" style="display:none; padding:0.9rem 1.1rem; border-radius:var(--radius-sm); font-size:0.88rem; margin-bottom:1.2rem; line-height:1.4;"></div>
+
+              <form id="portalForgotForm" onsubmit="window.MJPortal.handleForgotPassword(event)">
+                <div class="form-group">
+                  <label class="form-label">Registered Email Address *</label>
+                  <input type="email" name="email" id="portalForgotEmail" class="form-control" required placeholder="Enter your email (e.g. name@example.com)" autocomplete="email">
+                </div>
+                <button type="submit" id="portalForgotSubmitBtn" class="btn btn-primary btn-lg w-100" style="margin-top:0.8rem;">
+                  Send Password Reset Link →
+                </button>
+              </form>
+
+              <!-- Optional In-place Set New Password Box for Immediate Recovery -->
+              <div id="portalDirectNewPasswordBox" style="display:none; margin-top:1.4rem; padding:1.2rem; background:var(--bg-subtle); border-radius:var(--radius-sm); border:1px solid var(--border-color-light);">
+                <h5 style="font-family:var(--font-heading); font-size:1.2rem; margin-bottom:0.4rem;">Set New Password</h5>
+                <form onsubmit="window.MJPortal.handleSetNewPassword(event)">
+                  <div class="form-group">
+                    <label class="form-label">New Password *</label>
+                    <input type="password" id="portalDirectNewPass" class="form-control" required minlength="6" placeholder="Enter at least 6 characters" autocomplete="new-password">
+                  </div>
+                  <button type="submit" id="portalDirectNewPassBtn" class="btn btn-primary btn-sm w-100" style="margin-top:0.4rem;">
+                    Update Password & Sign In →
+                  </button>
+                </form>
+              </div>
+
+              <div style="margin-top:1.4rem; text-align:center; font-size:0.88rem;">
+                <a href="javascript:void(0)" onclick="window.MJPortal.toggleAuthView('login')" style="color:var(--color-primary-dark); font-weight:600; text-decoration:none; display:inline-flex; align-items:center; gap:0.3rem;">
+                  ← Back to Sign In
+                </a>
+              </div>
+            </div>
+
+            <!-- 4. SET NEW PASSWORD FORM (Triggered by Email Recovery Link) -->
+            <div id="portalFormNewPasswordWrap" style="${this.authView === 'new_password' ? 'display:block;' : 'display:none;'}">
+              <div style="text-align:center; margin-bottom:1.4rem;">
+                <div style="font-size:2.4rem; margin-bottom:0.4rem;">🔒</div>
+                <h4 style="font-family:var(--font-heading); font-size:1.6rem; margin-bottom:0.3rem;">Create New Password</h4>
+                <p style="color:var(--color-text-muted); font-size:0.88rem; line-height:1.5;">
+                  Please enter your new secure password below to regain access to your account.
+                </p>
+              </div>
+
+              <form onsubmit="window.MJPortal.handleSetNewPassword(event)">
+                <div class="form-group">
+                  <label class="form-label">New Password *</label>
+                  <input type="password" id="portalRecoveryNewPass" class="form-control" required minlength="6" placeholder="At least 6 characters" autocomplete="new-password">
+                </div>
+                <button type="submit" id="portalRecoveryPassSubmitBtn" class="btn btn-primary btn-lg w-100" style="margin-top:0.8rem;">
+                  Save New Password & Sign In →
+                </button>
+              </form>
+            </div>
+
           </div>
         `;
         return;
@@ -131,7 +216,10 @@
                 ${(user.name || 'User').charAt(0).toUpperCase()}
               </div>
               <div>
-                <h3 style="font-family:var(--font-heading); font-size:1.6rem; margin:0; color:var(--color-heading);">${user.name}</h3>
+                <div class="d-flex align-center gap-1">
+                  <h3 style="font-family:var(--font-heading); font-size:1.6rem; margin:0; color:var(--color-heading);">${user.name}</h3>
+                  ${isSupabaseActive ? '<span class="badge" style="background:#10B981; color:#fff; font-size:0.7rem; padding:2px 6px;">Supabase Cloud</span>' : ''}
+                </div>
                 <div style="color:var(--color-text-muted); font-size:0.85rem;">
                   ${user.email} • <strong>${orders.length}</strong> Order(s) • Total Spent: <strong>${window.MJCurrency ? window.MJCurrency.format(totalSpent) : `$${totalSpent.toFixed(2)}`}</strong>
                 </div>
@@ -314,22 +402,22 @@
                 <form onsubmit="window.MJPortal.handleSaveProfile(event)">
                   <div class="form-group">
                     <label class="form-label">Full Name *</label>
-                    <input type="text" name="name" class="form-control" required value="${user.name}">
+                    <input type="text" name="name" id="profileEditName" class="form-control" required value="${user.name}">
                   </div>
                   <div class="form-group">
                     <label class="form-label">Email Address (Registered)</label>
                     <input type="email" name="email" class="form-control" disabled value="${user.email}" style="background:var(--bg-subtle);">
-                    <small style="color:var(--color-text-muted);">Email cannot be changed as it links to your order history.</small>
+                    <small style="color:var(--color-text-muted);">Email is linked to your Supabase credentials and order records.</small>
                   </div>
                   <div class="form-group">
                     <label class="form-label">Contact Phone Number</label>
-                    <input type="tel" name="phone" class="form-control" value="${user.phone || ''}" placeholder="+92 (300) 000-0000">
+                    <input type="tel" name="phone" id="profileEditPhone" class="form-control" value="${user.phone || ''}" placeholder="+92 (300) 000-0000">
                   </div>
                   <div class="form-group">
                     <label class="form-label">Default Shipping Delivery Address</label>
-                    <textarea name="address" class="form-control" rows="3" placeholder="Enter house / building, street name, area, city">${user.address || ''}</textarea>
+                    <textarea name="address" id="profileEditAddress" class="form-control" rows="3" placeholder="Enter house / building, street name, area, city">${user.address || ''}</textarea>
                   </div>
-                  <button type="submit" class="btn btn-primary">Save Profile Changes</button>
+                  <button type="submit" id="profileEditSubmitBtn" class="btn btn-primary">Save Profile Changes</button>
                 </form>
               </div>
             ` : ''}
@@ -340,90 +428,252 @@
     },
 
     toggleAuthView(mode) {
+      this.authView = mode;
       const loginWrap = document.getElementById('portalFormLoginWrap');
       const regWrap = document.getElementById('portalFormRegisterWrap');
+      const forgotWrap = document.getElementById('portalFormForgotWrap');
+      const newPassWrap = document.getElementById('portalFormNewPasswordWrap');
+      const switcher = document.getElementById('portalAuthTabSwitcher');
       const btnLogin = document.getElementById('portalTabBtnLogin');
       const btnReg = document.getElementById('portalTabBtnRegister');
 
-      if (mode === 'register') {
+      if (mode === 'forgot') {
         if (loginWrap) loginWrap.style.display = 'none';
+        if (regWrap) regWrap.style.display = 'none';
+        if (newPassWrap) newPassWrap.style.display = 'none';
+        if (forgotWrap) forgotWrap.style.display = 'block';
+        if (switcher) switcher.style.setProperty('display', 'none', 'important');
+        
+        // Transfer email from login if entered
+        const loginEmail = document.getElementById('portalLoginEmail');
+        const forgotEmail = document.getElementById('portalForgotEmail');
+        if (loginEmail && forgotEmail && loginEmail.value.trim()) {
+          forgotEmail.value = loginEmail.value.trim();
+        }
+      } else if (mode === 'register') {
+        if (loginWrap) loginWrap.style.display = 'none';
+        if (forgotWrap) forgotWrap.style.display = 'none';
+        if (newPassWrap) newPassWrap.style.display = 'none';
         if (regWrap) regWrap.style.display = 'block';
+        if (switcher) switcher.style.display = 'flex';
         if (btnLogin) { btnLogin.style.background = 'transparent'; btnLogin.style.color = 'var(--color-heading)'; }
         if (btnReg) { btnReg.style.background = 'var(--color-primary)'; btnReg.style.color = '#fff'; }
-      } else {
-        if (loginWrap) loginWrap.style.display = 'block';
+      } else if (mode === 'new_password') {
+        if (loginWrap) loginWrap.style.display = 'none';
         if (regWrap) regWrap.style.display = 'none';
+        if (forgotWrap) forgotWrap.style.display = 'none';
+        if (newPassWrap) newPassWrap.style.display = 'block';
+        if (switcher) switcher.style.setProperty('display', 'none', 'important');
+      } else {
+        // default: 'login'
+        if (regWrap) regWrap.style.display = 'none';
+        if (forgotWrap) forgotWrap.style.display = 'none';
+        if (newPassWrap) newPassWrap.style.display = 'none';
+        if (loginWrap) loginWrap.style.display = 'block';
+        if (switcher) switcher.style.display = 'flex';
         if (btnLogin) { btnLogin.style.background = 'var(--color-primary)'; btnLogin.style.color = '#fff'; }
         if (btnReg) { btnReg.style.background = 'transparent'; btnReg.style.color = 'var(--color-heading)'; }
       }
     },
 
-    handleLogin(e) {
+    async handleLogin(e) {
       e.preventDefault();
       const form = e.target;
       const email = form.email.value.trim();
       const pass = form.password.value.trim();
+      const submitBtn = document.getElementById('portalLoginSubmitBtn');
 
       if (!email || !pass) {
         window.MJToast.error('Please enter both email and password.');
         return;
       }
 
-      const res = window.MJAuth.loginCustomer(email, pass);
-      if (res.success) {
-        window.MJToast.success(`Welcome back, ${res.customer.name}!`);
-        this.render();
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '⏳ Verifying Credentials...';
+      }
+
+      try {
+        const res = await window.MJAuth.loginCustomer(email, pass);
+        if (res.success) {
+          const sourceMsg = res.source === 'supabase' ? ' (Supabase Cloud)' : '';
+          window.MJToast.success(`Welcome back, ${res.customer.name}!${sourceMsg}`);
+          this.render();
+        } else {
+          window.MJToast.error(res.message || 'Login failed.');
+        }
+      } catch (err) {
+        window.MJToast.error('Error during sign in: ' + err.message);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Sign In to Account →';
+        }
       }
     },
 
-    handleRegister(e) {
+    async handleRegister(e) {
       e.preventDefault();
       const form = e.target;
       const name = form.name.value.trim();
       const email = form.email.value.trim();
-      const phone = form.phone.value.trim();
-      const address = form.address.value.trim();
+      const phone = form.phone ? form.phone.value.trim() : '';
+      const address = form.address ? form.address.value.trim() : '';
       const password = form.password.value.trim();
+      const submitBtn = document.getElementById('portalRegisterSubmitBtn');
 
       if (!name || !email || !password) {
         window.MJToast.error('Please fill in all required fields.');
         return;
       }
 
-      const res = window.MJAuth.registerCustomer({
-        name,
-        email,
-        phone,
-        address,
-        password
-      });
+      if (password.length < 6) {
+        window.MJToast.error('Password must be at least 6 characters long.');
+        return;
+      }
 
-      if (res.success) {
-        window.MJToast.success(`Welcome to MJ, ${res.customer.name}! Account created.`);
-        this.render();
-      } else {
-        window.MJToast.error(res.message);
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '⏳ Creating Account in Supabase...';
+      }
+
+      try {
+        const res = await window.MJAuth.registerCustomer({
+          name,
+          email,
+          phone,
+          address,
+          password
+        });
+
+        if (res.success) {
+          const sourceMsg = res.source === 'supabase' ? ' (Saved to Supabase Cloud)' : '';
+          window.MJToast.success(`Welcome to MJ, ${res.customer.name}! Account created.${sourceMsg}`);
+          this.render();
+        } else {
+          window.MJToast.error(res.message || 'Registration failed.');
+        }
+      } catch (err) {
+        window.MJToast.error('Registration error: ' + err.message);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Register & Create Account →';
+        }
       }
     },
 
-    handleLogout() {
+    async handleForgotPassword(e) {
+      e.preventDefault();
+      const form = e.target;
+      const email = form.email.value.trim();
+      const submitBtn = document.getElementById('portalForgotSubmitBtn');
+      const alertBox = document.getElementById('portalForgotStatusAlert');
+      const directBox = document.getElementById('portalDirectNewPasswordBox');
+
+      if (!email) {
+        window.MJToast.error('Please enter your email address.');
+        return;
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '⏳ Sending Reset Instructions...';
+      }
+
+      try {
+        const res = await window.MJAuth.sendPasswordResetEmail(email);
+        if (res.success) {
+          window.MJToast.success(res.message);
+          if (alertBox) {
+            alertBox.style.display = 'block';
+            alertBox.style.background = 'rgba(16, 185, 129, 0.12)';
+            alertBox.style.color = '#065f46';
+            alertBox.style.border = '1px solid #10B981';
+            alertBox.innerHTML = `<strong>✉️ Check Your Inbox!</strong><br>${res.message}`;
+          }
+          if (res.canResetDirectly && directBox) {
+            directBox.style.display = 'block';
+          }
+        } else {
+          window.MJToast.error(res.message || 'Could not process password reset.');
+          if (alertBox) {
+            alertBox.style.display = 'block';
+            alertBox.style.background = 'rgba(239, 68, 68, 0.12)';
+            alertBox.style.color = '#991b1b';
+            alertBox.style.border = '1px solid #EF4444';
+            alertBox.innerHTML = `<strong>Error:</strong> ${res.message}`;
+          }
+        }
+      } catch (err) {
+        window.MJToast.error('Error: ' + err.message);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Send Password Reset Link →';
+        }
+      }
+    },
+
+    async handleSetNewPassword(e) {
+      e.preventDefault();
+      const passInput = document.getElementById('portalRecoveryNewPass') || document.getElementById('portalDirectNewPass');
+      const newPass = passInput ? passInput.value.trim() : '';
+
+      if (!newPass || newPass.length < 6) {
+        window.MJToast.error('Password must be at least 6 characters long.');
+        return;
+      }
+
+      try {
+        const res = await window.MJAuth.updateCustomerPassword(newPass);
+        if (res.success) {
+          window.MJToast.success('Password updated successfully! You can now sign in.');
+          this.toggleAuthView('login');
+          const passEl = document.getElementById('portalLoginPassword');
+          if (passEl) passEl.value = newPass;
+        } else {
+          window.MJToast.error(res.message || 'Failed to update password.');
+        }
+      } catch (err) {
+        window.MJToast.error('Error: ' + err.message);
+      }
+    },
+
+    async handleLogout() {
       if (window.MJAuth && typeof window.MJAuth.logoutCustomer === 'function') {
-        window.MJAuth.logoutCustomer();
+        await window.MJAuth.logoutCustomer();
       }
       window.MJToast.info('You have signed out.');
       this.render();
     },
 
-    handleSaveProfile(e) {
+    async handleSaveProfile(e) {
       e.preventDefault();
       const form = e.target;
-      window.MJAuth.updateCustomerProfile({
-        name: form.name.value.trim(),
-        phone: form.phone.value.trim(),
-        address: form.address.value.trim()
-      });
-      window.MJToast.success('Profile and default address saved!');
-      this.render();
+      const submitBtn = document.getElementById('profileEditSubmitBtn');
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = '⏳ Saving...';
+      }
+
+      try {
+        await window.MJAuth.updateCustomerProfile({
+          name: form.name.value.trim(),
+          phone: form.phone.value.trim(),
+          address: form.address.value.trim()
+        });
+        window.MJToast.success('Profile and default address saved!');
+        this.render();
+      } catch (err) {
+        window.MJToast.error('Failed to update profile: ' + err.message);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Save Profile Changes';
+        }
+      }
     },
 
     reOrder(orderId) {
@@ -443,10 +693,40 @@
     }
   };
 
+  // Listen for Supabase password recovery event from email link
+  if (typeof window !== 'undefined') {
+    window.addEventListener('DOMContentLoaded', () => {
+      // Check if URL contains Supabase password recovery token
+      if (window.location.hash && window.location.hash.includes('type=recovery')) {
+        setTimeout(() => {
+          window.MJPortal.open(null, 'new_password');
+          window.MJToast.info('Please enter your new password to complete recovery.');
+        }, 500);
+      }
+
+      if (window.MJSupabase && window.MJSupabase.isConfigured()) {
+        const client = window.MJSupabase.getClient();
+        if (client && client.auth) {
+          client.auth.onAuthStateChange((event) => {
+            if (event === 'PASSWORD_RECOVERY') {
+              window.MJPortal.open(null, 'new_password');
+              window.MJToast.info('Please set your new password.');
+            }
+          });
+        }
+      }
+    });
+  }
+
   // Event Listeners for real-time reactivity
   window.MJStorage.on('auth:customer_login', () => window.MJPortal.updateHeaderAccountStatus());
   window.MJStorage.on('auth:customer_updated', () => window.MJPortal.updateHeaderAccountStatus());
   window.MJStorage.on('auth:customer_logout', () => window.MJPortal.updateHeaderAccountStatus());
+  window.MJStorage.on('supabase:config_updated', () => {
+    if (document.getElementById('customerAccountModal') && document.getElementById('customerAccountModal').classList.contains('active')) {
+      window.MJPortal.render();
+    }
+  });
   window.MJStorage.on('change:orders', () => {
     if (document.getElementById('customerAccountModal') && document.getElementById('customerAccountModal').classList.contains('active')) {
       window.MJPortal.render();
